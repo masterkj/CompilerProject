@@ -1,11 +1,16 @@
 package sympol_table;
 
-import javax.swing.text.TabableView;
 import java.util.*;
 
 public class Table {
 
-    private Hashtable<String, Item> table;
+    /**
+    * @author masterKj
+     * this is the table class, in each element in
+     * the hashTable we have:
+     * <variable name, var>*/
+
+    private Hashtable<String, Attribute> table;
     private List<Table> innerScopes;
     private Table parentScope;
     private int id;
@@ -23,37 +28,23 @@ public class Table {
         innerScopes = new ArrayList<>();
     }
 
-    public Table(Table parentScope, int id, Hashtable<String, Variable> parameters) {
-        this.parentScope = parentScope;
-        this.id = id;
-        table = new Hashtable<>();
-        innerScopes = new ArrayList<>();
-        insertAll(parameters);
-    }
-
-    public void insert(String name, Item item) {
-        if (name == null) throw new IllegalArgumentException("called insert with null key");
-        if (item == null) throw new IllegalArgumentException("called insert with null value");
+    public void DeclearVariable(String name, Attribute var) {
+        if (name == null) throw new IllegalArgumentException("called DeclearVariable with null key");
+        if (var == null) throw new IllegalArgumentException("called DeclearVariable with null value");
         if (contains(name)) {
             System.err.println(name + " is alredy decleared");
             return;
         }
-        table.put(name, item);
-        if (Symbol_table.DEBUG) {
-            System.out.println("\" you'v been created : " + name + " in scope : " + this.getId() + " of type : " + item.getDataType() + " of kind : " + item.getKind());
-            if (item.getKind() == Item.Kind.variable)
-                System.out.println("of variable : " + ((Variable) item).getValue());
-        }
+        table.put(name, var);
     }
 
-    public void insertAll(Hashtable<String, Variable> parameters) {
-        table.putAll(parameters);
-    }
-
-    //look recursivly
-    public boolean contains(String name) {
-        if (name == null) throw new IllegalArgumentException("called contaisns() with null key");
-        return table.containsKey(name);
+    /**
+     * to ensure that an variable is existed in the Table
+    * @param variable name
+     */
+    public boolean contains(String varName) {
+        if (varName == null) throw new IllegalArgumentException("called contaisns() with null key");
+        return table.containsKey(varName);
     }
 
     public void remove(String name) {
@@ -86,25 +77,24 @@ public class Table {
     }
 
 
-    //
-    public boolean isExisted(String name) {
-        if (this.contains(name)) {
-            System.out.println("case 1");
-            return true;
-        }
+    /**
+     * lookfor variabl*/
+    public boolean isExisted(String varName) {
+        if (this.contains(varName)) return true;
+
         if (this.getId() == 0)
             return false;
-        return this.getParentScope().isExisted(name);
+        return this.getParentScope().isExisted(varName);
     }
 
-    public Object getValue(String name) {
-        if (table.get(name) == null)
+    public Object getValue(String varName) {
+        if (table.contains(varName))
             if (this.getId() == 0)
                 return null;
             else
-                return this.getParentScope().getValue(name);
+                return this.getParentScope().getValue(varName);
         else
-            return table.get(name);
+            return table.get(varName);
     }
 
     class IllegalDeclear extends RuntimeException {

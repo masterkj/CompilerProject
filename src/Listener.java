@@ -1,5 +1,3 @@
-import sympol_table.Variable;
-
 import Hplsql.*;
 
 import java.util.Hashtable;
@@ -76,7 +74,7 @@ public class Listener extends HplsqlBaseListener {
 
 //    @Override
 ////    public void enterCreate_table_stmt(HqlParser.Create_table_stmtContext ctx) {
-////        Variables variables = new Variables();
+////        Variable_form variables = new Variable_form();
 ////        if (ctx.create_table_definition() != null) {
 ////            AttriputeVisitore visitore = new AttriputeVisitore();
 ////            variables = visitore.visit(ctx.create_table_definition().create_table_columns());

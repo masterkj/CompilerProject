@@ -2,18 +2,18 @@ package Data_Type;
 
 import java.io.Serializable;
 
-public class Variable_DT implements Serializable {
+public class Attribute_form implements Serializable {
     private String name;
     private String type;
-    private Variables details;
+    private Variable_form details;
 
-    public Variable_DT(String name, String type, Variables details) {
+    public Attribute_form(String name, String type, Variable_form details) {
         this.name = name;
         this.type = type;
         this.details = details;
     }
 
-    public Variable_DT(String name, String type) {
+    public Attribute_form(String name, String type) {
         this.name = name;
         this.type = type;
         this.details = null;
@@ -35,11 +35,11 @@ public class Variable_DT implements Serializable {
         this.type = type;
     }
 
-    public Variables getDetails() {
+    public Variable_form getDetails() {
         return details;
     }
 
-    public void setDetails(Variables details) {
+    public void setDetails(Variable_form details) {
         this.details = details;
     }
 

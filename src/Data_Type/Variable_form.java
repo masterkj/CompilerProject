@@ -5,25 +5,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Variables implements Serializable {
-    List<Variable_DT> VARIABLES = new ArrayList<>();
+public class Variable_form implements Serializable {
+    /**
+     * this is thr form of the Table or the DataType by general
+     * the attriputes meaning the variables in the table we have*/
 
-    public Variables() {
+    List<Attribute_form> attriputes = new ArrayList<>();
+
+    public Variable_form() {
     }
 
-    public Variables(Variable_DT... variables) {
-        Collections.addAll(this.VARIABLES, variables);
+    public Variable_form(Attribute_form... variables) {
+        Collections.addAll(this.attriputes, variables);
     }
 
-    public List<Variable_DT> getVARIABLES() {
-        return VARIABLES;
+    public List<Attribute_form> getAttriputes() {
+        return attriputes;
     }
 
-    public void addVariable(Variable_DT... variable){ Collections.addAll(VARIABLES,variable); }
+    public void addVariable(Attribute_form... variable){ Collections.addAll(attriputes,variable); }
 
     public void show(){
         System.out.println("{ ");
-        for(Variable_DT variable : VARIABLES){
+        for(Attribute_form variable : attriputes){
             System.out.println("{ ");
                 System.out.println("type : " + variable.getName()+ ",");
                 System.out.println("name : " + variable.getType()+ ",");
