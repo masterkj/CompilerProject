@@ -1,0 +1,78 @@
+[
+  {
+    "DataType" : "int",
+    "Variable_form" : {
+      "isImperative" : true,
+      "attributes" : [
+        {
+          "name": "int",
+          "type": "int",
+          "details": null
+        }
+      ]
+    }
+  },
+  {
+    "DataType" : "real",
+    "Variable_form" : {
+      "isImperative" : true,
+      "attributes" : [
+        {
+          "name": "real",
+          "type": "real",
+          "details": null
+        }
+      ]
+    }
+  },
+  {
+    "DataType" : "string",
+    "Variable_form" : {
+      "isImperative" : true,
+      "attributes" : [
+        {
+          "name": "string",
+          "type": "string",
+          "details": null
+        }
+      ]
+    }
+  },
+  {
+    "DataType" : "boolean",
+    "Variable_form" : {
+      "isImperative" : true,
+      "attributes" : [
+        {
+          "name": "boolean",
+          "type": "boolean",
+          "details": null
+        }
+      ]
+    }
+  },
+  {
+    "DataType" : "temperatures",
+    "Variable_form" : {
+      "isImperative" : false,
+      "attributes" : [
+        {
+          "name": "sensorId",
+          "type": "int",
+          "details": null
+        },
+        {
+          "name": "dateTime",
+          "type": "int",
+          "details": null
+        },
+        {
+          "name": "temp",
+          "type": "int",
+          "details": null
+        }
+
+      ]
+    }
+  }
+]

@@ -11,8 +11,17 @@ public class Variable_form implements Serializable {
      * the attriputes meaning the variables in the table we have*/
 
     List<Attribute_form> attriputes = new ArrayList<>();
+    boolean isImperative;
 
     public Variable_form() {
+    }
+
+    /**
+     * @param attribute_form, jsut one attribute, so
+     * it is an imperative variable*/
+    public Variable_form(Attribute_form attribute_form) {
+        this.attriputes.add(attribute_form);
+        this.isImperative = true;
     }
 
     public Variable_form(Attribute_form... variables) {
@@ -25,18 +34,4 @@ public class Variable_form implements Serializable {
 
     public void addVariable(Attribute_form... variable){ Collections.addAll(attriputes,variable); }
 
-    public void show(){
-        System.out.println("{ ");
-        for(Attribute_form variable : attriputes){
-            System.out.println("{ ");
-                System.out.println("type : " + variable.getName()+ ",");
-                System.out.println("name : " + variable.getType()+ ",");
-            if(variable.getDetails()!=null) {
-                System.out.println("details : ");
-                variable.getDetails().show();
-            }
-            System.out.println(" }");
-        }
-        System.out.println(" }");
-    }
 }
