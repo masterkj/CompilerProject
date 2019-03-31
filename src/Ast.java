@@ -11,7 +11,6 @@ public class Ast {
 
     public void print(RuleContext ctx) {
         explore(ctx, 0);
-
     }
 
     private void explore(RuleContext ctx, int indentation) {

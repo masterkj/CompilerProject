@@ -14,6 +14,7 @@ public class Variable_form implements Serializable {
     boolean isImperative;
 
     public Variable_form() {
+
     }
 
     /**
@@ -34,4 +35,7 @@ public class Variable_form implements Serializable {
 
     public void addVariable(Attribute_form... variable){ Collections.addAll(attriputes,variable); }
 
+    public boolean isImperative() {
+        return isImperative;
+    }
 }
