@@ -120,7 +120,7 @@ create_external_table_definition :
      ;
 create_external_table_columns :
         T_COMMA* create_external_table_columns_item (T_COMMENT string )*
-     ;
+     ;//string for comments
 create_external_table_columns_item :
        column_name dtype
      ;
