@@ -7,7 +7,6 @@ public class Data_Type implements Serializable {
     private static Map<String, Variable_form> GLOBAL_ARRAY = new HashMap<>();
     private static List<String> MAIN_DATA_TYPE = new ArrayList<>();
 
-    //TODO: make our Data_Type read from json file by the startup of the program
 
     /*
     * add DT to the GLOBAL_ARRAY*/
@@ -35,6 +34,8 @@ public class Data_Type implements Serializable {
     public static void setMainDT(String[] strings) {
         MAIN_DATA_TYPE = Arrays.asList(strings);
     }
+
+    //TODO: make our Data_Type read from json file by the startup of the program
 
     /**
      * read from json file that store our imparitive and Tables
