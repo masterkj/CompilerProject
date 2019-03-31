@@ -119,7 +119,7 @@ create_external_table_definition :
       (T_AS? T_OPEN_P select_stmt T_CLOSE_P | T_AS? select_stmt | T_OPEN_P create_external_table_columns*  T_CLOSE_P) create_table_options?
      ;
 create_external_table_columns :
-        T_COMMA* create_external_table_columns_item (T_COMMENT ident )*
+        T_COMMA* create_external_table_columns_item (T_COMMENT string )*
      ;
 create_external_table_columns_item :
        column_name dtype
@@ -787,6 +787,7 @@ timestamp_literal :                       // TIMESTAMP 'YYYY-MM-DD HH:MI:SS.FFF'
      ;
 	 ident :
        (L_ID | non_reserved_words) ('.' (L_ID | non_reserved_words))* ident?
+       |string
      ;
 string :                                   // String literal (single or double quoted)
        L_S_STRING                          # single_quotedString
