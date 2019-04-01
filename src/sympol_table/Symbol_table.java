@@ -1,6 +1,6 @@
 package sympol_table;
 
-import java.util.Hashtable;
+import Data_Type.Data_Type;
 
 
 public class Symbol_table {
@@ -29,46 +29,31 @@ public class Symbol_table {
         moveToScope(table);
     }
 
-    public static void initNewScobe(Hashtable<String, Variable> parameters) {
-        Table table = new Table(currentScobe, incrementId(), parameters);
-        currentScobe.addInnerScope(table);
-        moveToScope(table);
+    /**
+     * @param varName is the key in table
+     * @param dt      is to determain the Var dt then initialize it
+     *                (Var can initialize itself by knowing his DT)
+     */
+    public static void initVar(String varName, String dt) throws Data_Type.Data_Type.DataTypeNotFoundException {
+        currentScobe.DeclearVariable(varName, new Var(dt));
     }
 
-    public static void initItem(String name, Attribute item) {
-        currentScobe.DeclearVariable(name, item);
+    //set value to var.attripute
+    public static void setValue(String varName, String attriputeName, Object value) throws Table.VarNotExisted, Data_Type.DataTypeNotFoundException, Var.AttriputeNotFoundException {
+        currentScobe.setValue(varName, attriputeName, value);
     }
 
-    public static void initVariable(String name, String Type, Object value) {
-
-        switch (Type) {
-            case "int":
-                currentScobe.DeclearVariable(name, new Variable<Integer>("int", ((Double) value).intValue()));
-                break;
-            case "boolean":
-                if ((Double) value == 0)
-                    value = false;
-                currentScobe.DeclearVariable(name, new Variable<Boolean>("boolean", (Boolean) value));
-                value = (Boolean) value;
-                break;
-            case "real":
-                currentScobe.DeclearVariable(name, new Variable<Double>("float", (Double) value));
-                value = (Double) value;
-                break;
-            case "string":
-                if ((Double) value == 0)
-                    value = "";
-                currentScobe.DeclearVariable(name, new Variable<String>("float", (String) value));
-                value = (String) value;
-                break;
-        }
-
-        if (DEBUG)
-            System.out.println("\" you'v been created : " + name + " of type : " + Type + " have value " + value + " in scope : " + currentScobe.getId() + " \"");
+    //set value to imperative var
+    public static void setValue(String varName, Object value) throws Var.NotImperativeException, Table.VarNotExisted, Data_Type.DataTypeNotFoundException {
+        currentScobe.setValue(varName, value);
     }
 
-    public static Object getValue(String name) {
-        return currentScobe.getValue(name);
+    public static Object getValue(String varName) throws Var.NotImperativeException, Table.VarNotExisted, Data_Type.Data_Type.DataTypeNotFoundException {
+        return currentScobe.getValue(varName);
+    }
+
+    public static Object getValue(String varName, String attriputeName) throws Var.NotImperativeException, Table.VarNotExisted, Data_Type.Data_Type.DataTypeNotFoundException {
+        return currentScobe.getValue(varName, attriputeName);
     }
 
 }

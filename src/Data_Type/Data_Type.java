@@ -25,10 +25,10 @@ public class Data_Type implements Serializable {
         return GLOBAL_ARRAY.getOrDefault(DT,null)!=null;
     }
 
-    static public Variable_form get_DT(String DT) throws TableNotFoundException {
+    static public Variable_form get_DT(String DT) throws Data_Type.Data_Type.DataTypeNotFoundException {
         if(isDT(DT))
             return (Variable_form) GLOBAL_ARRAY.get(DT);
-        throw new TableNotFoundException(DT + "table is not decleared");
+        throw new Data_Type.Data_Type.DataTypeNotFoundException(DT + "table is not decleared");
     }
 
     public static void setMainDT(String[] strings) {
@@ -63,8 +63,8 @@ public class Data_Type implements Serializable {
 
     /*
     for an undeclared Table*/
-    public static class TableNotFoundException extends ClassNotFoundException {
-        TableNotFoundException(String s) { super(s); }
+    public static class DataTypeNotFoundException extends ClassNotFoundException {
+        DataTypeNotFoundException(String s) { super(s); }
     }
 
     /*
