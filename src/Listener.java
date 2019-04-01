@@ -3,8 +3,6 @@ import Hplsql.*;
 import java.util.Hashtable;
 
 public class Listener extends HplsqlBaseListener {
-    private Hashtable<String, Variable> queued = new Hashtable<>();
-
     @Override
     public void enterBegin_end_block(HplsqlParser.Begin_end_blockContext ctx) {
 //        if (queued.isEmpty())
