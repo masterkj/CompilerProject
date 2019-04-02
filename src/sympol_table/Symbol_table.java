@@ -1,5 +1,7 @@
 package sympol_table;
 
+import com.sun.org.apache.xpath.internal.operations.Variable;
+
 import java.util.Hashtable;
 
 
@@ -30,7 +32,7 @@ public class Symbol_table {
     }
 
     public static void initNewScobe(Hashtable<String, Variable> parameters) {
-        Table table = new Table(currentScobe, incrementId(), parameters);
+        Table table = new Table(currentScobe, incrementId());
         currentScobe.addInnerScope(table);
         moveToScope(table);
     }

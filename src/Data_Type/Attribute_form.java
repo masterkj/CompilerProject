@@ -7,6 +7,9 @@ public class Attribute_form implements Serializable {
     private String type;
     private Variable_form details;
 
+    public Attribute_form() {
+    }
+
     public Attribute_form(String name, String type, Variable_form details) {
         this.name = name;
         this.type = type;

@@ -10,7 +10,7 @@ public class Variable_form implements Serializable {
      * this is thr form of the Table or the DataType by general
      * the attriputes meaning the variables in the table we have*/
 
-    List<Attribute_form> attriputes = new ArrayList<>();
+    Attribute_form attriputes = new ArrayList<>();
     boolean isImperative;
 
     public Variable_form() {
