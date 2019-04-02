@@ -17,13 +17,13 @@ public class Var {
     Map<String, Attribute> attriputes = new HashMap<>();
     String dataType;
 
-    Var(String dataType) throws Data_Type.Data_Type.DataTypeNotFoundException {
+    Var(String dataType) throws Data_Type.DataTypeNotFoundException {
         if (Data_Type.isDT(dataType))
             initializeVar(Data_Type.get_DT(dataType));
     }
 
     private void initializeVar(Variable_form attributes) {
-        for (Attribute_form attripute_form : attributes.getAttriputes()) {
+        for (Attribute_form attripute_form : attributes.getAttributes()) {
             String type = attripute_form.getType();
             String name = attripute_form.getName();
 
@@ -82,7 +82,7 @@ public class Var {
      *
      * @retrun imperative Var value
      */
-    public Object getAttriputeValue() throws Data_Type.Data_Type.DataTypeNotFoundException, NotImperativeException {
+    public Object getAttriputeValue() throws Data_Type.DataTypeNotFoundException, NotImperativeException {
         if (Data_Type.get_DT(this.dataType).isImperative())
             return this.attriputes.get(dataType).getValue();
         throw new NotImperativeException(dataType);

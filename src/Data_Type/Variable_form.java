@@ -8,9 +8,9 @@ import java.util.List;
 public class Variable_form implements Serializable {
     /**
      * this is thr form of the Table or the DataType by general
-     * the attriputes meaning the variables in the table we have*/
+     * the attributes meaning the variables in the table we have*/
 
-    Attribute_form attriputes = new ArrayList<>();
+    List<Attribute_form> attributes = new ArrayList<>();
     boolean isImperative;
 
     public Variable_form() {
@@ -21,21 +21,28 @@ public class Variable_form implements Serializable {
      * @param attribute_form, jsut one attribute, so
      * it is an imperative variable*/
     public Variable_form(Attribute_form attribute_form) {
-        this.attriputes.add(attribute_form);
+        this.attributes.add(attribute_form);
         this.isImperative = true;
     }
 
     public Variable_form(Attribute_form... variables) {
-        Collections.addAll(this.attriputes, variables);
+        Collections.addAll(this.attributes, variables);
     }
 
-    public List<Attribute_form> getAttriputes() {
-        return attriputes;
+    public List<Attribute_form> getAttributes() {
+        return attributes;
     }
 
-    public void addVariable(Attribute_form... variable){ Collections.addAll(attriputes,variable); }
+    public void addAttribute(Attribute_form... attribute){ Collections.addAll(attributes,attribute); }
 
     public boolean isImperative() {
         return isImperative;
+    }
+
+    public void printAttriputes() {
+        for (Attribute_form attribute_form : attributes) {
+            System.out.println("attripute name: " +
+                    attribute_form.getName() + "\n attripute type: " + attribute_form.getType());
+        }
     }
 }

@@ -6,7 +6,7 @@
     - we will reefer to a real data type in the symbol table **(done)**
     - we will notice the deference between the imperative and the Tables (Variable in just one attribute) to can easily get,update their values **(done)**
 4. fix the AST to prepare start in codeGen
-    - fix symbol table and table
+    - fix symbol table and table **(done)**
     - fix iterate on the code
 5. do the create statement (map, shuffle, reduce)
 6. we will add the c++ rules **(done)**

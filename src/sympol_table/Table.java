@@ -104,7 +104,7 @@ public class Table {
      * if it existed in this tabe -> return it
      * @throws exception if it not exist in the global array
      */
-    public Object getValue(String varName) throws VarNotExisted, Var.NotImperativeException, Data_Type.Data_Type.DataTypeNotFoundException {
+    public Object getValue(String varName) throws VarNotExisted, Var.NotImperativeException, Data_Type.DataTypeNotFoundException {
         if (this.contains(varName))
             return this.table.get(varName).getAttriputeValue();
         else if (this.getId() == 0)

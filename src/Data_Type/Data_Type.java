@@ -1,19 +1,16 @@
 package Data_Type;
 
-import com.google.gson.JsonObject;
-import jdk.nashorn.internal.objects.Global;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import sympol_table.Var;
 
 import java.io.*;
 import java.util.*;
 
 
 public class Data_Type implements Serializable {
-    private static Map<String, Variable_form> GLOBAL_ARRAY = new HashMap<>();
+    private static Map<String, Variable_form> GLOBAL_ARRAY = new LinkedHashMap<>();
     private static List<String> MAIN_DATA_TYPE = new ArrayList<>();
     private static final String JSON_FILE_NAME="assest\\DATA_TYPE.json";
 
@@ -37,10 +34,10 @@ public class Data_Type implements Serializable {
         return GLOBAL_ARRAY.getOrDefault(DT,null)!=null;
     }
 
-    static public Variable_form get_DT(String DT) throws Data_Type.Data_Type.DataTypeNotFoundException {
+    static public Variable_form get_DT(String DT) throws Data_Type.DataTypeNotFoundException {
         if(isDT(DT))
             return (Variable_form) GLOBAL_ARRAY.get(DT);
-        throw new Data_Type.Data_Type.DataTypeNotFoundException(DT + "table is not decleared");
+        throw new Data_Type.DataTypeNotFoundException(DT + "table is not decleared");
     }
 
     public static void setMainDT(String[] strings) {
@@ -65,13 +62,13 @@ public class Data_Type implements Serializable {
 
             arrvar.isImperative= fileVar.isImperative;
 
-            for (int j = 0; j <fileVar.getAttriputes().size() ; j++) {
+            for (int j = 0; j <fileVar.getAttributes().size() ; j++) {
 
-                String attrName=fileVar.getAttriputes().get(j).getName();
-                String attrType=fileVar.getAttriputes().get(j).getType();
-                Variable_form attrForm=fileVar.getAttriputes().get(j).getDetails();
+                String attrName=fileVar.getAttributes().get(j).getName();
+                String attrType=fileVar.getAttributes().get(j).getType();
+                Variable_form attrForm=fileVar.getAttributes().get(j).getDetails();
 
-                arrvar.getAttriputes().add(new Attribute_form(attrName,attrType,attrForm));
+                arrvar.getAttributes().add(new Attribute_form(attrName,attrType,attrForm));
 
             }
             set_DT((String) json.get("DataType"),arrvar);
@@ -96,13 +93,13 @@ public class Data_Type implements Serializable {
 
             fileVar.isImperative=arrVar.isImperative;
 
-            for (int j = 0; j <arrVar.getAttriputes().size() ; j++) {
+            for (int j = 0; j <arrVar.getAttributes().size() ; j++) {
 
-                String attrName=arrVar.getAttriputes().get(j).getName();
-                String attrType=arrVar.getAttriputes().get(j).getType();
-                Variable_form attrForm=arrVar.getAttriputes().get(j).getDetails();
+                String attrName=arrVar.getAttributes().get(j).getName();
+                String attrType=arrVar.getAttributes().get(j).getType();
+                Variable_form attrForm=arrVar.getAttributes().get(j).getDetails();
 
-                fileVar.getAttriputes().add(new Attribute_form(attrName,attrType,attrForm));
+                fileVar.getAttributes().add(new Attribute_form(attrName,attrType,attrForm));
 
             }
 
@@ -147,6 +144,11 @@ public class Data_Type implements Serializable {
         updateDataTypeFile();
     }
 
+    public static void printDataType(String DT) {
+        GLOBAL_ARRAY.get(DT).printAttriputes();
+
+    }
+
     /*
     for an undeclared Table*/
     public static class DataTypeNotFoundException extends ClassNotFoundException {
@@ -155,7 +157,7 @@ public class Data_Type implements Serializable {
 
     /*
     for an already decleard Table*/
-    static class TableDeclearedException extends Exception {
+    public static class TableDeclearedException extends Exception {
         TableDeclearedException(String s) { super(s); }
     }
 }

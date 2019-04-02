@@ -45,8 +45,8 @@ proc_block :
         ;
 
 stmt :
-      create_external_table_stmt
-     |create_function_stmt
+       create_external_table_stmt
+     | create_function_stmt
      | create_index_stmt
      | create_local_temp_table_stmt
      | create_package_stmt
