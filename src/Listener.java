@@ -4,8 +4,11 @@ import sympol_table.Var;
 import java.util.Hashtable;
 
 public class Listener extends HplsqlBaseListener {
+<<<<<<< HEAD
     private Hashtable<String, Var> queued = new Hashtable<>();
 
+=======
+>>>>>>> 307dc28e279c1039e0112f3d7857e5f231930b95
     @Override
     public void enterBegin_end_block(HplsqlParser.Begin_end_blockContext ctx) {
 //        if (queued.isEmpty())

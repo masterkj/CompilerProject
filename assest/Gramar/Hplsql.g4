@@ -119,11 +119,12 @@ create_external_table_definition :
       (T_AS? T_OPEN_P select_stmt T_CLOSE_P | T_AS? select_stmt | T_OPEN_P create_external_table_columns*  T_CLOSE_P) create_table_options?
      ;
 create_external_table_columns :
-        T_COMMA* create_external_table_columns_item (T_COMMENT string )*
+        T_COMMA* create_external_table_columns_item (comments )*
      ;//string for comments
 create_external_table_columns_item :
        column_name dtype
      ;
+     comments: T_COMMENT string;
 create_table_columns :
        create_table_columns_item (T_COMMA create_table_columns_item)*
      ;

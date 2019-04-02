@@ -1,16 +1,19 @@
 package sympol_table;
 
+import Data_Type.Data_Type;
+
 import java.util.*;
 
 public class Table {
 
     /**
-    * @author masterKj
+     * @author masterKj
      * this is the table class, in each element in
      * the hashTable we have:
-     * <variable name, var>*/
+     * <variable name, var>
+     */
 
-    private Hashtable<String, Attribute> table;
+    private Hashtable<String, Var> table;
     private List<Table> innerScopes;
     private Table parentScope;
     private int id;
@@ -28,44 +31,28 @@ public class Table {
         innerScopes = new ArrayList<>();
     }
 
-    public void DeclearVariable(String name, Attribute var) {
-        if (name == null) throw new IllegalArgumentException("called DeclearVariable with null key");
+    public void DeclearVariable(String varName, Var var) {
+        if (varName == null) throw new IllegalArgumentException("called DeclearVariable with null key");
         if (var == null) throw new IllegalArgumentException("called DeclearVariable with null value");
-        if (contains(name)) {
-            System.err.println(name + " is alredy decleared");
+        if (contains(varName)) {
+            System.err.println(varName + " is alredy decleared");
             return;
         }
-        table.put(name, var);
+        table.put(varName, var);
     }
 
     /**
      * to ensure that an variable is existed in the Table
-    * @param variable name
+     *
+     * @param variable name
      */
     public boolean contains(String varName) {
         if (varName == null) throw new IllegalArgumentException("called contaisns() with null key");
         return table.containsKey(varName);
     }
 
-    public void remove(String name) {
-        if (name == null) throw new IllegalArgumentException();
-        table.remove(name);
-    }
-
-    public int size() {
-        return table.size();
-    }
-
     public Table getParentScope() {
         return parentScope;
-    }
-
-    public Iterable<String> keys() {
-        return table.keySet();
-    }
-
-    public Iterator<String> iterator() {
-        return table.keySet().iterator();
     }
 
     public int getId() {
@@ -76,9 +63,9 @@ public class Table {
         this.innerScopes.add(table);
     }
 
-
     /**
-     * lookfor variabl*/
+     * lookfor variabl
+     */
     public boolean isExisted(String varName) {
         if (this.contains(varName)) return true;
 
@@ -87,19 +74,65 @@ public class Table {
         return this.getParentScope().isExisted(varName);
     }
 
-    public Object getValue(String varName) {
-        if (table.contains(varName))
-            if (this.getId() == 0)
-                return null;
-            else
-                return this.getParentScope().getValue(varName);
-        else
-            return table.get(varName);
+    //TODO: set attriput value, or set imperative value
+
+    /**
+     * it's imperative DT
+     * @param varName to set the value */
+    public void setValue(String varName, Object value) throws Data_Type.DataTypeNotFoundException, VarNotExisted, Var.NotImperativeException {
+        if (this.contains(varName))
+            this.table.get(varName).setAttriputeValue(value);
+        else if (this.getId() == 0)
+            throw new VarNotExisted(varName);
+        else this.getParentScope().setValue(varName, value);
     }
 
-    class IllegalDeclear extends RuntimeException {
+    /**
+     * @param varName       is for the intire variable name
+     * @param attriputeName for the attripute in the Var
+     */
+    public void setValue(String varName, String attriputeName, Object value) throws Var.AttriputeNotFoundException, VarNotExisted, Data_Type.DataTypeNotFoundException {
+        if (this.contains(varName))
+            this.table.get(varName).setAttriputeValue(attriputeName, value);
+        else if (this.getId() == 0)
+            throw new VarNotExisted(varName);
+        else this.getParentScope().setValue(varName, attriputeName, value);
+    }
+
+    /**
+     * it's imperative Var
+     * if it existed in this tabe -> return it
+     * @throws exception if it not exist in the global array
+     */
+    public Object getValue(String varName) throws VarNotExisted, Var.NotImperativeException, Data_Type.Data_Type.DataTypeNotFoundException {
+        if (this.contains(varName))
+            return this.table.get(varName).getAttriputeValue();
+        else if (this.getId() == 0)
+            throw new VarNotExisted(varName);
+        else return this.getParentScope().getValue(varName);
+    }
+
+    /**
+     * @param varName       is for the intire variable name
+     * @param attriputeName for the attripute in the Var
+     */
+    public Object getValue(String varName, String attriputeName) throws VarNotExisted {
+        if (this.contains(varName))
+            return this.table.get(varName).getAttriputeValue(attriputeName);
+        else if (this.getId() == 0)
+            throw new VarNotExisted(varName);
+        else return this.getParentScope().getValue(varName, attriputeName);
+    }
+
+    static class IllegalDeclear extends RuntimeException {
         IllegalDeclear(String s) {
             super(s);
+        }
+    }
+
+    static class VarNotExisted extends Exception {
+        VarNotExisted(String varName) {
+            super(varName + " not existed ! ");
         }
     }
 }
