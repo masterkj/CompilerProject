@@ -11,7 +11,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-
+//
             CharStream cs = fromFileName("./assest/code.txt");
             HplsqlLexer lexer = new HplsqlLexer(cs);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -21,14 +21,7 @@ public class Main {
             ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
             parseTreeWalker.walk(listener,tree);
             Data_Type.printDataType("page_view");
-
-
-
-
-//      build the symbol table(the input in "code.txt")
-//
-//
-//
+            Data_Type.printDataTypes();
 
     }
 

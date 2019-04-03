@@ -7,15 +7,12 @@ import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class Data_Type implements Serializable {
     private static Map<String, Variable_form> GLOBAL_ARRAY = new LinkedHashMap<>();
-    private static List<String> MAIN_DATA_TYPE = new ArrayList<>();
     private static final String JSON_FILE_NAME="assest\\DATA_TYPE.json";
-
-
-
 
     /*
     * add DT to the GLOBAL_ARRAY*/
@@ -40,10 +37,6 @@ public class Data_Type implements Serializable {
         throw new Data_Type.DataTypeNotFoundException(DT + "table is not decleared");
     }
 
-    public static void setMainDT(String[] strings) {
-        MAIN_DATA_TYPE = Arrays.asList(strings);
-    }
-
     //TODO: make our Data_Type read from json file by the startup of the program
 
     /**
@@ -66,9 +59,8 @@ public class Data_Type implements Serializable {
 
                 String attrName=fileVar.getAttributes().get(j).getName();
                 String attrType=fileVar.getAttributes().get(j).getType();
-                Variable_form attrForm=fileVar.getAttributes().get(j).getDetails();
 
-                arrvar.getAttributes().add(new Attribute_form(attrName,attrType,attrForm));
+                arrvar.getAttributes().add(new Attribute_form(attrName,attrType));
 
             }
             set_DT((String) json.get("DataType"),arrvar);
@@ -144,10 +136,19 @@ public class Data_Type implements Serializable {
         updateDataTypeFile();
     }
 
-    public static void printDataType(String DT) {
-        GLOBAL_ARRAY.get(DT).printAttriputes();
+    public static String printDataType(String DT) {
+        return GLOBAL_ARRAY.get(DT).toString();
 
     }
+
+    public static void printDataTypes() {
+        String result;
+         GLOBAL_ARRAY.forEach((e,s)-> {
+             System.out.println(printDataType(e));
+        });
+    }
+
+
 
     /*
     for an undeclared Table*/

@@ -5,21 +5,14 @@ import java.io.Serializable;
 public class Attribute_form implements Serializable {
     private String name;
     private String type;
-    private Variable_form details;
 
     public Attribute_form() {
     }
 
-    public Attribute_form(String name, String type, Variable_form details) {
-        this.name = name;
-        this.type = type;
-        this.details = details;
-    }
 
     public Attribute_form(String name, String type) {
         this.name = name;
         this.type = type;
-        this.details = null;
     }
 
     public String getName() {
@@ -38,14 +31,11 @@ public class Attribute_form implements Serializable {
         this.type = type;
     }
 
-    public Variable_form getDetails() {
-        return details;
+    @Override
+    public String toString() {
+        return "\nAttribute_form{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                '}';
     }
-
-    public void setDetails(Variable_form details) {
-        this.details = details;
-    }
-
-
-
 }

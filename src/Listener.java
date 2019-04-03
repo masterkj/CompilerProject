@@ -18,10 +18,8 @@ public class Listener extends HplsqlBaseListener {
         });
 
         try {
-            Data_Type.addDataType(dataTypeName, variable_form);
-        } catch (Data_Type.TableDeclearedException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
+            Data_Type.set_DT(dataTypeName, variable_form);
+        } catch (Data_Type.TableDeclearedException | FileNotFoundException e) {
             e.printStackTrace();
         }
 

@@ -39,10 +39,20 @@ public class Variable_form implements Serializable {
         return isImperative;
     }
 
-    public void printAttriputes() {
-        for (Attribute_form attribute_form : attributes) {
-            System.out.println("attripute name: " +
-                    attribute_form.getName() + "\n attripute type: " + attribute_form.getType());
-        }
+//    public void printAttriputes() {
+//        for (Attribute_form attribute_form : attributes) {
+//            System.out.println("attripute name: " +
+//                    attribute_form.getName() + "\n attripute type: " + attribute_form.getType());
+//        }
+//    }
+
+
+    @Override
+    public String toString() {
+        return "Variable_form{" +
+                "attributes=" + attributes +
+                ", isImperative=" + isImperative +
+                '}';
     }
+
 }

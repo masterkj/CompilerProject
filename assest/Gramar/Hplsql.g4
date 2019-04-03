@@ -1506,7 +1506,6 @@ T_NEGATIV      : '!' ;
 T_BOOL         : B O O L;
 T_WRITE        : W R I T E;
  T_AND_cpp: '&&';
- T_OR_cpp :'||';
 L_NUMBER    : [0-9];
 L_ID        : L_ID_PART                                                // Identifier
             ;
