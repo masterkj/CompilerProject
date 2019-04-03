@@ -17,7 +17,7 @@ begin_end_block :
 block_b_end :
      {!_input.LT(2).getText().equalsIgnoreCase("TRANSACTION")}? T_CLOSE_B;
 
-single_block_stmt :                                      // Single BEGIN END block (but nested blocks are possible) or single statement
+single_block_stmt :                                      // ss Single BEGIN END block (but nested blocks are possible) or single statement
        T_BEGIN block block_end
      | stmt T_SEMICOLON?
      ;
