@@ -45,8 +45,8 @@ proc_block :
         ;
 
 stmt :
-       create_external_table_stmt
-     | create_function_stmt
+      create_external_table_stmt
+     |create_function_stmt
      | create_index_stmt
      | create_local_temp_table_stmt
      | create_package_stmt
@@ -119,12 +119,11 @@ create_external_table_definition :
       (T_AS? T_OPEN_P select_stmt T_CLOSE_P | T_AS? select_stmt | T_OPEN_P create_external_table_columns*  T_CLOSE_P) create_table_options?
      ;
 create_external_table_columns :
-        T_COMMA* create_external_table_columns_item (comments )*
+        T_COMMA* create_external_table_columns_item (T_COMMENT string )*
      ;//string for comments
 create_external_table_columns_item :
        column_name dtype
      ;
-     comments: T_COMMENT string;
 create_table_columns :
        create_table_columns_item (T_COMMA create_table_columns_item)*
      ;
@@ -165,8 +164,10 @@ create_table_preoptions_td_item :
 create_table_options :
        create_table_options_item+
      ;
+location: T_LOCATION string;
 create_table_options_item :
        T_ON T_COMMIT (T_DELETE | T_PRESERVE) T_ROWS
+     | T_COMMENT string
      | create_table_options_ora_item
      | create_table_options_db2_item
      | create_table_options_td_item
@@ -197,13 +198,14 @@ create_table_options_td_item :
      ;
 create_table_options_hive_item :
        create_table_hive_row_format
-     | T_STORED T_AS ident
+     | T_STORED T_AS ident create_table_hive_row_format
      ;
 create_table_hive_row_format :
-       T_ROW T_FORMAT T_DELIMITED create_table_hive_row_format_fields*
+       T_ROW T_FORMAT T_DELIMITED  create_table_hive_row_format_fields*
      ;
+
 create_table_hive_row_format_fields :
-       T_FIELDS T_TERMINATED T_BY expr (T_ESCAPED T_BY expr)?
+       T_FIELDS T_TERMINATED T_BY ident location (T_ESCAPED T_BY expr)?
      | T_COLLECTION T_ITEMS T_TERMINATED T_BY expr
      | T_MAP T_KEYS T_TERMINATED T_BY expr
      | T_LINES T_TERMINATED T_BY expr
@@ -214,6 +216,7 @@ create_table_options_mssql_item :
      | T_TEXTIMAGE_ON ident
      ;
 create_table_options_mysql_item :
+
        T_AUTO_INCREMENT T_EQUAL? expr
      | T_COMMENT T_EQUAL? expr
      | T_DEFAULT? (T_CHARACTER T_SET | T_CHARSET) T_EQUAL? expr
@@ -787,8 +790,9 @@ timestamp_literal :                       // TIMESTAMP 'YYYY-MM-DD HH:MI:SS.FFF'
        T_TIMESTAMP string
      ;
 	 ident :
-       (L_ID | non_reserved_words) ('.' (L_ID | non_reserved_words))* ident?
-       |string
+	 string
+       |(L_ID | non_reserved_words) ('.' (L_ID | non_reserved_words))* ident?
+
      ;
 string :                                   // String literal (single or double quoted)
        L_S_STRING                          # single_quotedString
