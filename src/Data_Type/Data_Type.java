@@ -1,10 +1,15 @@
 package Data_Type;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import jdk.nashorn.internal.objects.Global;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -12,27 +17,27 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Data_Type implements Serializable {
     private static Map<String, Variable_form> GLOBAL_ARRAY = new LinkedHashMap<>();
-    private static final String JSON_FILE_NAME="assest\\DATA_TYPE.json";
+    private static final String JSON_FILE_NAME = "assest\\DATA_TYPE.json";
 
     /*
-    * add DT to the GLOBAL_ARRAY*/
+     * add DT to the GLOBAL_ARRAY*/
     public static void set_DT(String DT, Variable_form variables) throws TableDeclearedException, FileNotFoundException {
         if (isDT(DT)) throw new TableDeclearedException(DT + "is laready decleared");
         GLOBAL_ARRAY.put(DT, variables);
 
     }
 
-    public static void set_DT(String DT_name, Attribute_form...args) throws FileNotFoundException {
-        GLOBAL_ARRAY.put(DT_name,new Variable_form(args));
+    public static void set_DT(String DT_name, Attribute_form... args) throws FileNotFoundException {
+        GLOBAL_ARRAY.put(DT_name, new Variable_form(args));
 
     }
 
-    public static boolean isDT(String DT){
-        return GLOBAL_ARRAY.getOrDefault(DT,null)!=null;
+    public static boolean isDT(String DT) {
+        return GLOBAL_ARRAY.getOrDefault(DT, null) != null;
     }
 
     static public Variable_form get_DT(String DT) throws Data_Type.DataTypeNotFoundException {
-        if(isDT(DT))
+        if (isDT(DT))
             return (Variable_form) GLOBAL_ARRAY.get(DT);
         throw new Data_Type.DataTypeNotFoundException(DT + "table is not decleared");
     }
@@ -41,98 +46,128 @@ public class Data_Type implements Serializable {
 
     /**
      * read from json file that store our imparitive and Tables
-     * @throws Exception if we can't find our file*/
-    public static void loadDataTypeFile() throws IOException, ParseException, TableDeclearedException {
+     *
+     * @throws Exception if we can't find our file
+     */
+    public static void loadDataTypeFile() throws IOException, ParseException {
 
-        Object obj = new JSONParser().parse(new FileReader(JSON_FILE_NAME));
-        JSONArray jsonarr= (JSONArray) obj;
+        Object obj = new JSONParser().parse(new FileReader("C:\\Users\\Najib\\Documents\\DATA_TYPE.json"));
 
-        for (int i = 0; i < jsonarr.size(); i++) {
-            JSONObject json= (JSONObject) jsonarr.get(i);
+        JSONArray jsonarr = (JSONArray) obj;
 
-            Variable_form fileVar= (Variable_form) json.get("Variable_form");
-            Variable_form arrvar=new Variable_form();
+        jsonarr.forEach(e -> {
 
-            arrvar.isImperative= fileVar.isImperative;
+            try {
 
-            for (int j = 0; j <fileVar.getAttributes().size() ; j++) {
+                JSONObject json = (JSONObject) e;
+                JSONObject filevar = (JSONObject) json.get("Variable_form");
+                boolean isImperative = (boolean) filevar.get("isImperative");
+                Variable_form vari = new Variable_form();
+                vari.isImperative = isImperative;
+                JSONArray vararr = (JSONArray) filevar.get("attributes");
+                vararr.forEach(x -> {
+                    JSONObject fileattr = (JSONObject) x;
+                    Attribute_form atrr = new Attribute_form(fileattr.get("name").toString(), fileattr.get("type").toString());
+                    vari.attributes.add(atrr);
+                });
 
-                String attrName=fileVar.getAttributes().get(j).getName();
-                String attrType=fileVar.getAttributes().get(j).getType();
-
-                arrvar.getAttributes().add(new Attribute_form(attrName,attrType));
-
+                Data_Type.set_DT((String) json.get("DataType"), vari);
+            } catch (TableDeclearedException e1) {
+                e1.printStackTrace();
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
             }
-            set_DT((String) json.get("DataType"),arrvar);
+        });
 
-        }
 
     }
 
+    public static JSONObject creatJson(String e, Variable_form s) {
+
+        JSONArray aattr = new JSONArray();
+
+        s.attributes.forEach(a -> {
+            JSONObject jattr = new JSONObject();
+            jattr.put("name", a.getName());
+            jattr.put("type", a.getType());
+            aattr.add(jattr);
+
+        });
+
+        JSONObject jvar = new JSONObject();
+        jvar.put("isImperative", s.isImperative);
+        jvar.put("attributes", aattr);
+
+
+        JSONObject json = new JSONObject();
+        json.put("Variable_form", jvar);
+        json.put("DataType", e);
+
+        return json;
+    }
+
     /**
-     * update the json file every time we make change to the GLOBAL_ARRAY*/
+     * update the json file every time we make change to the GLOBAL_ARRAY
+     */
     public static void updateDataTypeFile() throws FileNotFoundException {
 
 
-        JSONArray arr=(JSONArray) GLOBAL_ARRAY;
+        JSONArray array = new JSONArray();
+        GLOBAL_ARRAY.forEach((e, s) -> {
 
-      /*  for (int i = 0; i < GLOBAL_ARRAY.size(); i++) {
+            array.add(creatJson(e, s));
 
-            JSONObject json= (JSONObject) arr.get(i);
+        });
 
-            Variable_form arrVar=(Variable_form) json.get("Variable_form");
-            Variable_form fileVar=new Variable_form();
+        try (FileWriter file = new FileWriter(JSON_FILE_NAME)) {
 
-            fileVar.isImperative=arrVar.isImperative;
+            file.write(String.valueOf(array));
+            file.flush();
 
-            for (int j = 0; j <arrVar.getAttributes().size() ; j++) {
-
-                String attrName=arrVar.getAttributes().get(j).getName();
-                String attrType=arrVar.getAttributes().get(j).getType();
-                Variable_form attrForm=arrVar.getAttributes().get(j).getDetails();
-
-                fileVar.getAttributes().add(new Attribute_form(attrName,attrType,attrForm));
-
-            }
-
-            json.put(GLOBAL_ARRAY.get("DataType"),fileVar);
-*/
-            PrintWriter pw = new PrintWriter(JSON_FILE_NAME);
-            pw.write(arr.toJSONString());
-
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
-     * clear all DataTypes without the imperetives DataTypes*/
+     * clear all DataTypes without the imperetives DataTypes
+     */
     public static void clearDataTypeTables() throws IOException, ParseException, TableDeclearedException {
 
-        JSONArray array = (JSONArray) GLOBAL_ARRAY;
-        JSONArray newarray = (JSONArray) GLOBAL_ARRAY;
 
-        for (int i = 0; i <array.size() ; i++) {
+        JSONArray array = new JSONArray();
+        GLOBAL_ARRAY.forEach((e, s) -> {
+            if (s.isImperative) {
+                array.add(creatJson(e, s));
+            }
+        });
 
-        JSONObject json=(JSONObject) array.get(i);
-        Variable_form var=(Variable_form) json.get("Variable_form");
-        if(var.isImperative){
-            newarray.add(array.get(i));
+        try (FileWriter file = new FileWriter(JSON_FILE_NAME)) {
+
+            file.write(String.valueOf(array));
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        }
-        PrintWriter pw = new PrintWriter(JSON_FILE_NAME);
-        pw.write(array.toJSONString());
-        updateDataTypeFile();
+
+        GLOBAL_ARRAY=new HashMap<String, Variable_form>();
+
         loadDataTypeFile();
     }
+
     /**
-     * remove a DT unless it's an imperitive*/
-    public static void removeDT() throws FileNotFoundException {
+     * remove a DT unless it's an imperitive
+     */
+    public static void removeDT(String data_type) throws FileNotFoundException {
 
-
+        GLOBAL_ARRAY.remove(data_type);
         updateDataTypeFile();
 
     }
 
     public static void addDataType(String DT, Variable_form variables) throws TableDeclearedException, FileNotFoundException {
-        set_DT(DT,variables);
+        set_DT(DT, variables);
         updateDataTypeFile();
     }
 
@@ -142,23 +177,27 @@ public class Data_Type implements Serializable {
     }
 
     public static void printDataTypes() {
-        String result;
-         GLOBAL_ARRAY.forEach((e,s)-> {
-             System.out.println(printDataType(e));
+
+        GLOBAL_ARRAY.forEach((e, s) -> {
+            System.out.println(printDataType(e));
+
         });
     }
-
 
 
     /*
     for an undeclared Table*/
     public static class DataTypeNotFoundException extends ClassNotFoundException {
-        DataTypeNotFoundException(String s) { super(s); }
+        DataTypeNotFoundException(String s) {
+            super(s);
+        }
     }
 
     /*
     for an already decleard Table*/
     public static class TableDeclearedException extends Exception {
-        TableDeclearedException(String s) { super(s); }
+        TableDeclearedException(String s) {
+            super(s);
+        }
     }
 }

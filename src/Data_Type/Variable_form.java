@@ -25,6 +25,12 @@ public class Variable_form implements Serializable {
         this.isImperative = true;
     }
 
+    public Variable_form(Attribute_form attribute_form,boolean isImperative) {
+        this.attributes.add(attribute_form);
+        this.isImperative =isImperative;
+    }
+
+
     public Variable_form(Attribute_form... variables) {
         Collections.addAll(this.attributes, variables);
     }
