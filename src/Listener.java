@@ -19,7 +19,7 @@ public class Listener extends HplsqlBaseListener {
 
         try {
             Data_Type.set_DT(dataTypeName, variable_form);
-        } catch (Data_Type.TableDeclearedException | FileNotFoundException e) {
+        } catch (Data_Type.Data_Type.TableDeclaredException | FileNotFoundException e) {
             e.printStackTrace();
         }
 

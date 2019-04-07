@@ -1,14 +1,13 @@
 package sympol_table;
 
 
-import java.util.Hashtable;
 import Data_Type.Data_Type;
 
 
 public class Symbol_table {
     private static int total_id = 0;
-    private static Table GLOBAL_SCOPE = new Table(null, incrementId());
-    private static Table currentScobe = GLOBAL_SCOPE;
+    private static Scope GLOBAL_SCOPE = new Scope(null, incrementId());
+    private static Scope currentScobe = GLOBAL_SCOPE;
     public static final boolean DEBUG = true;
 
 
@@ -16,7 +15,7 @@ public class Symbol_table {
         return total_id++;
     }
 
-    public static void moveToScope(Table scobe) {
+    public static void moveToScope(Scope scobe) {
         currentScobe = scobe;
     }
 
@@ -26,38 +25,24 @@ public class Symbol_table {
     }
 
     public static void initNewScobe() {
-        Table table = new Table(currentScobe, incrementId());
-        currentScobe.addInnerScope(table);
+        Scope table = new Scope(currentScobe, incrementId());
         moveToScope(table);
     }
 
-
-
-    /**
-     * @param varName is the key in table
-     * @param dt      is to determain the Var dt then initialize it
-     *                (Var can initialize itself by knowing his DT)
-     */
-    public static void initVar(String varName, String dt) throws Data_Type.DataTypeNotFoundException {
-        currentScobe.DeclearVariable(varName, new Var(dt));
+    public static void addVar(String varName, String DT) throws Scope.VarAlreadyDeclaredException {
+        currentScobe.addVar(varName, DT);
     }
 
-    //set value to var.attripute
-    public static void setValue(String varName, String attriputeName, Object value) throws Table.VarNotExisted, Data_Type.DataTypeNotFoundException, Var.AttriputeNotFoundException {
-        currentScobe.setValue(varName, attriputeName, value);
+    public static Table getTable(String varName) {
+        return  null;
     }
 
-    //set value to imperative var
-    public static void setValue(String varName, Object value) throws Var.NotImperativeException, Table.VarNotExisted, Data_Type.DataTypeNotFoundException {
-        currentScobe.setValue(varName, value);
+    public static ImperativeVar getImperativeVar(String varName) {
+        return null;
     }
 
-    public static Object getValue(String varName) throws Var.NotImperativeException, Table.VarNotExisted, Data_Type.DataTypeNotFoundException {
-        return currentScobe.getValue(varName);
-    }
-
-    public static Object getValue(String varName, String attriputeName) throws Var.NotImperativeException, Table.VarNotExisted, Data_Type.DataTypeNotFoundException {
-        return currentScobe.getValue(varName, attriputeName);
+    public static void setVarValue(String imperativeVarName, Object value) {
+        getImperativeVar(imperativeVarName).setValue(value);
     }
 
 }

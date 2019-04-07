@@ -7,11 +7,11 @@ import java.util.List;
 
 public class Variable_form implements Serializable {
     /**
-     * this is thr form of the Table or the DataType by general
+     * this is thr form of the Scope or the DataType by general
      * the attributes meaning the variables in the table we have*/
 
     List<Attribute_form> attributes = new ArrayList<>();
-    boolean isImperative;
+    private boolean isImperative;
 
     public Variable_form() {
 

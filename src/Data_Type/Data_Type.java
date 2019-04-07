@@ -1,19 +1,12 @@
 package Data_Type;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import jdk.nashorn.internal.objects.Global;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-
 
 public class Data_Type implements Serializable {
     private static Map<String, Variable_form> GLOBAL_ARRAY = new LinkedHashMap<>();
@@ -21,8 +14,8 @@ public class Data_Type implements Serializable {
 
     /*
      * add DT to the GLOBAL_ARRAY*/
-    public static void set_DT(String DT, Variable_form variables) throws TableDeclearedException, FileNotFoundException {
-        if (isDT(DT)) throw new TableDeclearedException(DT + "is laready decleared");
+    public static void set_DT(String DT, Variable_form variables) throws Data_Type.Data_Type.TableDeclaredException, FileNotFoundException {
+        if (isDT(DT)) throw new Data_Type.Data_Type.TableDeclaredException(DT + "is laready decleared");
         GLOBAL_ARRAY.put(DT, variables);
 
     }
@@ -38,8 +31,8 @@ public class Data_Type implements Serializable {
 
     static public Variable_form get_DT(String DT) throws Data_Type.DataTypeNotFoundException {
         if (isDT(DT))
-            return (Variable_form) GLOBAL_ARRAY.get(DT);
-        throw new Data_Type.DataTypeNotFoundException(DT + "table is not decleared");
+            return GLOBAL_ARRAY.get(DT);
+        throw new Data_Type.DataTypeNotFoundException(DT);
     }
 
     //TODO: make our Data_Type read from json file by the startup of the program
@@ -51,7 +44,7 @@ public class Data_Type implements Serializable {
      */
     public static void loadDataTypeFile() throws IOException, ParseException {
 
-        Object obj = new JSONParser().parse(new FileReader("C:\\Users\\Najib\\Documents\\DATA_TYPE.json"));
+        Object obj = new JSONParser().parse(new FileReader("D:\\imp\\IT\\fourth_year\\فصل ثاني\\compiler\\CompilerProject\\assest\\DATA_TYPE.json"));
 
         JSONArray jsonarr = (JSONArray) obj;
 
@@ -72,7 +65,7 @@ public class Data_Type implements Serializable {
                 });
 
                 Data_Type.set_DT((String) json.get("DataType"), vari);
-            } catch (TableDeclearedException e1) {
+            } catch (Data_Type.Data_Type.TableDeclaredException e1) {
                 e1.printStackTrace();
             } catch (FileNotFoundException e1) {
                 e1.printStackTrace();
@@ -132,7 +125,7 @@ public class Data_Type implements Serializable {
     /**
      * clear all DataTypes without the imperetives DataTypes
      */
-    public static void clearDataTypeTables() throws IOException, ParseException, TableDeclearedException {
+    public static void clearDataTypeTables() throws IOException, ParseException, Data_Type.Data_Type.TableDeclaredException {
 
 
         JSONArray array = new JSONArray();
@@ -166,7 +159,7 @@ public class Data_Type implements Serializable {
 
     }
 
-    public static void addDataType(String DT, Variable_form variables) throws TableDeclearedException, FileNotFoundException {
+    public static void addDataType(String DT, Variable_form variables) throws Data_Type.Data_Type.TableDeclaredException, FileNotFoundException {
         set_DT(DT, variables);
         updateDataTypeFile();
     }
@@ -180,23 +173,36 @@ public class Data_Type implements Serializable {
 
         GLOBAL_ARRAY.forEach((e, s) -> {
             System.out.println(printDataType(e));
-
         });
+    }
+
+    public static boolean isImperative(String DT) {
+        return GLOBAL_ARRAY.get(DT).isImperative();
+    }
+
+    public static String getHDFSPath(String dataType) {
+//        return GLOBAL_ARRAY.get(dataType).getHDFSPath();
+        return null;
+    }
+
+    public static String getDelimiter(String dataType) {
+//        return GLOBAL_ARRAY.get(dataType).getDelimiter();
+        return null;
     }
 
 
     /*
-    for an undeclared Table*/
+    for an undeclared Scope*/
     public static class DataTypeNotFoundException extends ClassNotFoundException {
-        DataTypeNotFoundException(String s) {
-            super(s);
+        public DataTypeNotFoundException(String DT) {
+            super(DT + " dataType is not found");
         }
     }
 
     /*
-    for an already decleard Table*/
-    public static class TableDeclearedException extends Exception {
-        TableDeclearedException(String s) {
+    for an already decleard Scope*/
+    public static class TableDeclaredException extends Exception {
+        TableDeclaredException(String s) {
             super(s);
         }
     }
