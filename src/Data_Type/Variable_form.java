@@ -8,10 +8,13 @@ import java.util.List;
 public class Variable_form implements Serializable {
     /**
      * this is thr form of the Scope or the DataType by general
-     * the attributes meaning the variables in the table we have*/
+     * the attributes meaning the variables in the table we have
+     */
 
     List<Attribute_form> attributes = new ArrayList<>();
     private boolean isImperative;
+    private String HDFSPath = null;
+    private String Delimiter = null;
 
     public Variable_form() {
 
@@ -19,15 +22,45 @@ public class Variable_form implements Serializable {
 
     /**
      * @param attribute_form, jsut one attribute, so
-     * it is an imperative variable*/
+     *                        it is an imperative variable
+     */
     public Variable_form(Attribute_form attribute_form) {
         this.attributes.add(attribute_form);
         this.isImperative = true;
     }
 
-    public Variable_form(Attribute_form attribute_form,boolean isImperative) {
+    public void setImperative(boolean imperative) {
+        isImperative = imperative;
+    }
+
+    public void setHDFSPath(String HDFSPath) {
+        this.HDFSPath = HDFSPath;
+    }
+
+    public void setDelimiter(String delimiter) {
+        Delimiter = delimiter;
+    }
+
+    public String getHDFSPath() {
+        return HDFSPath;
+    }
+
+    public String getDelimiter() {
+        return Delimiter;
+    }
+
+    public Variable_form(Attribute_form attribute_form, boolean isImperative) {
         this.attributes.add(attribute_form);
-        this.isImperative =isImperative;
+        this.isImperative = isImperative;
+    }
+
+    public Variable_form(List<Attribute_form> attributes , boolean isImperative, String delimiter, String HDFSPath) {
+        this.attributes=attributes;
+        this.isImperative = isImperative;
+        if (!isImperative) {
+            this.HDFSPath = HDFSPath;
+            this.Delimiter = delimiter;
+        }
     }
 
 
@@ -39,7 +72,9 @@ public class Variable_form implements Serializable {
         return attributes;
     }
 
-    public void addAttribute(Attribute_form... attribute){ Collections.addAll(attributes,attribute); }
+    public void addAttribute(Attribute_form... attribute) {
+        Collections.addAll(attributes, attribute);
+    }
 
     public boolean isImperative() {
         return isImperative;

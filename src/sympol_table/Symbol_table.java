@@ -29,7 +29,7 @@ public class Symbol_table {
         moveToScope(table);
     }
 
-    public static void addVar(String varName, String DT) throws Scope.VarAlreadyDeclaredException {
+    public static void addVar(String varName, String DT) throws Scope.VarAlreadyDeclaredException, Data_Type.DataTypeNotFoundException {
         currentScobe.addVar(varName, DT);
     }
 

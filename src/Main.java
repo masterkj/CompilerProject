@@ -7,10 +7,14 @@ import static org.antlr.v4.runtime.CharStreams.fromFileName;
 import org.json.simple.parser.ParseException;
 
 public class Main {
-    public static void main(String[] args) throws IOException, Data_Type.Data_Type.TableDeclaredException, ParseException {
+    public static void main(String[] args) throws IOException, Data_Type.TableDeclaredException, ParseException {
 //
             Data_Type.loadDataTypeFile();
-            Data_Type.printDataTypes();
+            Data_Type.clearDataTypeTables();
+            Data_Type.updateDataTypeFile();
+          //  Data_Type.loadDataTypeFile();
+            Data_Type.updateDataTypeFile();
+        //    Data_Type.printDataTypes();
 
 
 //            CharStream cs = fromFileName("./assest/code.txt");
