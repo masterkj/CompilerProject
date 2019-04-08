@@ -545,8 +545,11 @@ select_list_limit :
        T_TOP expr
      ;
 select_list_item :
+        column_namename* T_FROM table_namename |
        ((ident T_EQUAL)? expr select_list_alias? | select_list_asterisk)
      ;
+     column_namename:ident T_COMMA?;
+     table_namename:ident;
 select_list_alias :
        {!_input.LT(1).getText().equalsIgnoreCase("INTO") && !_input.LT(1).getText().equalsIgnoreCase("FROM")}? T_AS? ident
      | T_OPEN_P T_TITLE L_S_STRING T_CLOSE_P
