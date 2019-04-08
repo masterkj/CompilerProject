@@ -11,7 +11,7 @@ public class Variable_form implements Serializable {
      * the attributes meaning the variables in the table we have*/
 
     List<Attribute_form> attributes = new ArrayList<>();
-    private boolean isImperative;
+    boolean isImperative;
 
     public Variable_form() {
 

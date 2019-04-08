@@ -8,7 +8,6 @@ public class Symbol_table {
     private static int total_id = 0;
     private static Scope GLOBAL_SCOPE = new Scope(null, incrementId());
     private static Scope currentScobe = GLOBAL_SCOPE;
-    public static final boolean DEBUG = true;
 
 
     public static int incrementId() {
@@ -29,19 +28,19 @@ public class Symbol_table {
         moveToScope(table);
     }
 
-    public static void addVar(String varName, String DT) throws Scope.VarAlreadyDeclaredException {
+    public static void addVar(String varName, String DT) throws Scope.VarAlreadyDeclaredException, Data_Type.DataTypeNotFoundException {
         currentScobe.addVar(varName, DT);
     }
 
-    public static Table getTable(String varName) {
-        return  null;
+    public static Table getTable(String varName) throws Scope.NotTableVarException, Scope.VarNotExistedException {
+        return currentScobe.getTable(varName);
     }
 
-    public static ImperativeVar getImperativeVar(String varName) {
-        return null;
+    public static ImperativeVar getImperativeVar(String varName) throws Scope.VarNotExistedException, Scope.NotImperativeVarException {
+        return currentScobe.getImperativeVar(varName);
     }
 
-    public static void setVarValue(String imperativeVarName, Object value) {
+    public static void setVarValue(String imperativeVarName, Object value) throws Scope.NotImperativeVarException, Scope.VarNotExistedException {
         getImperativeVar(imperativeVarName).setValue(value);
     }
 

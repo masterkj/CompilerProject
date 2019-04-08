@@ -31,6 +31,9 @@ public class Scope {
                 case ("REAL"):
                     this.table.put(varName, new ImperativeVar<Float>(DT));
                     break;
+                case ("BIGINT"):
+                    this.table.put(varName, new ImperativeVar<Long>(DT));
+                    break;
                 case ("BOOLEAN"):
                     this.table.put(varName, new ImperativeVar<Boolean>(DT));
                     break;
@@ -61,7 +64,7 @@ public class Scope {
     }
 
     /**
-     * lookfor variabl
+     * look for variable
      */
     public boolean isExisted(String varName) {
         if (this.contains(varName)) return true;
@@ -71,22 +74,41 @@ public class Scope {
         return this.getParentScope().isExisted(varName);
     }
 
+    /**
+     * if it contains && instanceOf Table -> return it
+     * else get it from parent scope
+     *
+     * @throw NotTableVarException if it not instanceof Table
+     * @throw VarNotExistedException if it not existed
+     */
+    Table getTable(String varName) throws NotTableVarException, VarNotExistedException {
+        if (this.contains(varName))
+            if (!(this.table.get(varName) instanceof Table)) throw new NotTableVarException(varName);
+            else return (Table) this.table.get(varName);
+        else if (this.getId() == 0)
+            throw new VarNotExistedException(varName);
+        else return this.getParentScope().getTable(varName);
+    }
 
-//    /**
-//     * it's imperative Var
-//     * if it existed in this tabe -> return it
-//     * @throws exception if it not exist in the global array
-//     */
-//    public Object getValue(String varName) throws VarNotExisted, Var.NotImperativeException, Data_Type.DataTypeNotFoundException {
-//        if (this.contains(varName))
-//            return this.table.get(varName).getAttriputeValue();
-//        else if (this.getId() == 0)
-//            throw new VarNotExisted(varName);
-//        else return this.getParentScope().getValue(varName);
-//    }
+    /**
+     * if it contains && instanceOf ImperativeVar -> return it
+     * else get it from parent scope
+     *
+     * @throw NotTableVarException if it not instanceof Table
+     * @throw VarNotExistedException if it not existed
+     */
+    ImperativeVar getImperativeVar(String varName) throws NotImperativeVarException, VarNotExistedException {
+        if (this.contains(varName))
+            if (!(this.table.get(varName) instanceof ImperativeVar)) throw new NotImperativeVarException(varName);
+            else return (ImperativeVar) this.table.get(varName);
+        else if (this.getId() == 0)
+            throw new VarNotExistedException(varName);
+        else return this.getParentScope().getImperativeVar(varName);
+    }
 
-    static class VarNotExisted extends Exception {
-        VarNotExisted(String varName) {
+
+    static class VarNotExistedException extends Exception {
+        VarNotExistedException(String varName) {
             super(varName + " not existed ! ");
         }
     }
@@ -94,6 +116,18 @@ public class Scope {
     static class VarAlreadyDeclaredException extends Exception {
         VarAlreadyDeclaredException(String varName) {
             super(varName + " is already declared in this scope");
+        }
+    }
+
+    static class NotTableVarException extends Exception {
+        NotTableVarException(String varName) {
+            super(varName + " isn't table");
+        }
+    }
+
+    static class NotImperativeVarException extends Exception {
+        NotImperativeVarException(String varName) {
+            super(varName + " isn't Imperative");
         }
     }
 }

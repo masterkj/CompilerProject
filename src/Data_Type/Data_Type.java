@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.*;
 
 public class Data_Type implements Serializable {
-    private static Map<String, Variable_form> GLOBAL_ARRAY = new LinkedHashMap<>();
+    private static Map<String, Variable_form> GLOBAL_ARRAY = new HashMap<>();
     private static final String JSON_FILE_NAME = "assest\\DATA_TYPE.json";
 
     /*
@@ -144,7 +144,7 @@ public class Data_Type implements Serializable {
             e.printStackTrace();
         }
 
-        GLOBAL_ARRAY=new HashMap<String, Variable_form>();
+        GLOBAL_ARRAY = new HashMap<String, Variable_form>();
 
         loadDataTypeFile();
     }

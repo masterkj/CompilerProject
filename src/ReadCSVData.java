@@ -8,7 +8,7 @@ public class ReadCSVData {
 
     public static void main(String[] args) {
 
-        String csvFile = "assest/read.csv";
+        String csvFile = "assest/tempretures.csv";
         BufferedReader br = null;
         String line = "";
         String cvsSplitBy = ",";
