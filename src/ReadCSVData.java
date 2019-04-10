@@ -2,11 +2,13 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ReadCSVData {
 
-    public static void read(String... columns) {
+    public static void read(ArrayList<String> columns) {
 
         String csvFile = "assest/tempretures.csv";
         BufferedReader br = null;
@@ -24,9 +26,9 @@ public class ReadCSVData {
             String[] header = line.split(cvsSplitBy);
             //   String []Columns = null;
             int index[] = null;
-            for (int i = 0; i < columns.length; i++) {
+            for (int i = 0; i < columns.size(); i++) {
                 for (int j = 0; j < header.length; j++) {
-                    if (columns[i] == header[j]) {
+                    if (columns.get(i) == header[j]) {
                         index[i] = j;
                     }
                 }

@@ -4,6 +4,8 @@ import Data_Type.Variable_form;
 import Hplsql.*;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Listener extends HplsqlBaseListener {
     @Override
@@ -24,19 +26,18 @@ public class Listener extends HplsqlBaseListener {
         }
 
     }
- int i = 0 ;
+    @Override
     public void enterSelect_stmt(HplsqlParser.Select_stmtContext ctx){
-        String data_type=ctx.fullselect_stmt().fullselect_stmt_item(1).subselect_stmt().select_list().select_list_item(1).tabname().ident().getText();
+        String data_type=ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().select_list().select_list_item(0).tabname().ident().getText();
         System.out.println(data_type);
         if(!Data_Type.isDT(data_type)){
             //TODO: throw exception
         }
-            String attrinbuteNames[] = null;
-        ctx.fullselect_stmt().fullselect_stmt_item(1).subselect_stmt().select_list().select_list_item(1).column().forEach(e->{
-            attrinbuteNames[i++]=e.ident().getText();
+        ArrayList<String> attrinbuteNames = new ArrayList<>();
+        ctx.fullselect_stmt().fullselect_stmt_item().get(0).subselect_stmt().select_list().select_list_item(0).column().forEach(e->{
+            attrinbuteNames.add(e.ident().getText());
 
 
-            i++;
         });
         ReadCSVData.read(attrinbuteNames);
 
