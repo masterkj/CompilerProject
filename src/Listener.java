@@ -24,14 +24,21 @@ public class Listener extends HplsqlBaseListener {
         }
 
     }
-
+ int i = 0 ;
     public void enterSelect_stmt(HplsqlParser.Select_stmtContext ctx){
-        String data_type=ctx.fullselect_stmt().fullselect_stmt_item(1).subselect_stmt().select_list().select_list_item(1).table_namename().ident().getText();
+        String data_type=ctx.fullselect_stmt().fullselect_stmt_item(1).subselect_stmt().select_list().select_list_item(1).tabname().ident().getText();
+        System.out.println(data_type);
         if(!Data_Type.isDT(data_type)){
             //TODO: throw exception
         }
-        ctx.fullselect_stmt().fullselect_stmt_item(1).subselect_stmt().select_list().select_list_item().forEach(e->{
+            String attrinbuteNames[] = null;
+        ctx.fullselect_stmt().fullselect_stmt_item(1).subselect_stmt().select_list().select_list_item(1).column().forEach(e->{
+            attrinbuteNames[i++]=e.ident().getText();
 
+
+            i++;
         });
+        ReadCSVData.read(attrinbuteNames);
+
     }
 }

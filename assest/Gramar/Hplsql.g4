@@ -2,7 +2,6 @@ grammar Hplsql;
 
 program : block EOF;
 
-
 block : ((begin_end_block | stmt) )* ;  // Multiple consecutive blocks/statements
 
 
@@ -524,7 +523,7 @@ fullselect_stmt :
      ;
 fullselect_stmt_item :
        subselect_stmt
-     | T_OPEN_P fullselect_stmt T_CLOSE_P
+    // | T_OPEN_P fullselect_stmt T_CLOSE_P
      ;
 fullselect_set_clause :
        T_UNION T_ALL?
@@ -545,13 +544,13 @@ select_list_limit :
        T_TOP expr
      ;
 select_list_item :
-        column_namename* T_FROM table_namename |
-       ((ident T_EQUAL)? expr select_list_alias? | select_list_asterisk)
+       column* T_FROM tabname
+       //|((ident T_EQUAL)? expr select_list_alias? | select_list_asterisk)
      ;
-     column_namename:ident T_COMMA?;
-     table_namename:ident;
+     column : ident T_COMMA?;
+     tabname: ident;
 select_list_alias :
-       {!_input.LT(1).getText().equalsIgnoreCase("INTO") && !_input.LT(1).getText().equalsIgnoreCase("FROM")}? T_AS? ident
+        T_AS? ident
      | T_OPEN_P T_TITLE L_S_STRING T_CLOSE_P
      ;
 select_list_asterisk :
@@ -618,6 +617,7 @@ qualify_clause :
      ;
 order_by_clause :
        T_ORDER T_BY expr (T_ASC | T_DESC)? (T_COMMA expr (T_ASC | T_DESC)?)*
+       | T_ORDER T_BY L_NUMBER
      ;
 select_options :
        select_options_item+
@@ -784,7 +784,9 @@ expr_func_params :
        func_param (T_COMMA func_param)*
      ;
 func_param :
-       {!_input.LT(1).getText().equalsIgnoreCase("INTO")}? (ident T_EQUAL T_GREATER?)? expr
+        (ident | L_NUMBER)
+      | (ident T_EQUAL T_GREATER?)? expr
+
      ;
 date_literal :                             // DATE 'YYYY-MM-DD' literal
        T_DATE string

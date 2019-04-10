@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class ReadCSVData {
 
-    public static void main(String[] args) {
+    public static void read(String... columns) {
 
         String csvFile = "assest/tempretures.csv";
         BufferedReader br = null;
@@ -19,10 +19,27 @@ public class ReadCSVData {
             Scanner scan = new Scanner(System.in);
 // select * --> line
 // out put coloumn country[ColNumber]
-            int ColNumber = scan.nextInt()-1;
+            //  int ColNumber = scan.nextInt()-1;
+            line = br.readLine();
+            String[] header = line.split(cvsSplitBy);
+            //   String []Columns = null;
+            int index[] = null;
+            for (int i = 0; i < columns.length; i++) {
+                for (int j = 0; j < header.length; j++) {
+                    if (columns[i] == header[j]) {
+                        index[i] = j;
+                    }
+                }
+            }
+            System.out.println(line);
             while ((line = br.readLine()) != null) {
                 String[] country = line.split(cvsSplitBy);
-                System.out.println( line);
+                // Thread.sleep();
+                for (int i = 0; i < index.length; i++) {
+
+                    System.out.print(country[index[i]]+",");
+                }
+                System.out.println();
             }
 
         } catch (FileNotFoundException e) {
@@ -38,7 +55,5 @@ public class ReadCSVData {
                 }
             }
         }
-
     }
-
 }

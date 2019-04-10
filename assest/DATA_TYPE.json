@@ -1,1 +1,72 @@
-[{"Variable_form":{"isImperative":true,"attributes":[{"name":"boolean","type":"boolean"}]},"DataType":"boolean"},{"Variable_form":{"isImperative":true,"attributes":[{"name":"string","type":"string"}]},"DataType":"string"},{"Variable_form":{"Delimiter":null,"HDFSPath":null,"isImperative":false,"attributes":[{"name":"sensorId","type":"int"},{"name":"dateTime","type":"int"},{"name":"temp","type":"int"}]},"DataType":"temperatures"},{"Variable_form":{"isImperative":true,"attributes":[{"name":"real","type":"real"}]},"DataType":"real"},{"Variable_form":{"isImperative":true,"attributes":[{"name":"int","type":"int"}]},"DataType":"int"}]
+[
+  {
+    "Variable_form": {
+      "isImperative": true,
+      "attributes": [
+        {
+          "name": "boolean",
+          "type": "boolean"
+        }
+      ]
+    },
+    "DataType": "boolean"
+  },
+  {
+    "Variable_form": {
+      "isImperative": true,
+      "attributes": [
+        {
+          "name": "string",
+          "type": "string"
+        }
+      ]
+    },
+    "DataType": "string"
+  },
+  {
+    "Variable_form": {
+      "Delimiter": null,
+      "HDFSPath": null,
+      "isImperative": false,
+      "attributes": [
+        {
+          "name": "sensorId",
+          "type": "int"
+        },
+        {
+          "name": "dateTime",
+          "type": "int"
+        },
+        {
+          "name": "temp",
+          "type": "int"
+        }
+      ]
+    },
+    "DataType": "temperatures"
+  },
+  {
+    "Variable_form": {
+      "isImperative": true,
+      "attributes": [
+        {
+          "name": "real",
+          "type": "real"
+        }
+      ]
+    },
+    "DataType": "real"
+  },
+  {
+    "Variable_form": {
+      "isImperative": true,
+      "attributes": [
+        {
+          "name": "int",
+          "type": "int"
+        }
+      ]
+    },
+    "DataType": "int"
+  }
+]
