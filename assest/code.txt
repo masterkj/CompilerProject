@@ -1,1 +1,0 @@
-select w,f from m;

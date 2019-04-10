@@ -41,7 +41,7 @@ public class Data_Type implements Serializable {
      */
     public static void loadDataTypeFile() throws IOException, ParseException {
 
-        Object obj = new JSONParser().parse(new FileReader("C:\\Users\\Najib\\Documents\\DATA_TYPE.json"));
+        Object obj = new JSONParser().parse(new FileReader("f:\\GithubProject\\CompilerProject\\assest\\DATA_TYPE.json"));
 
         JSONArray jsonarr = (JSONArray) obj;
 

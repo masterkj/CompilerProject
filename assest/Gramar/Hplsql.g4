@@ -523,7 +523,7 @@ fullselect_stmt :
      ;
 fullselect_stmt_item :
        subselect_stmt
-    // | T_OPEN_P fullselect_stmt T_CLOSE_P
+     | T_OPEN_P fullselect_stmt T_CLOSE_P
      ;
 fullselect_set_clause :
        T_UNION T_ALL?

@@ -2,46 +2,38 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ReadCSVData {
 
-    public static void read(String... columns) {
+    public static void read(ArrayList<String> columns) {
 
-        String csvFile = "assest/tempretures.csv";
+        String csvFile = "f:/GithubProject/CompilerProject/assest/tempretures.csv";
         BufferedReader br = null;
         String line = "";
         String cvsSplitBy = ",";
-
+        int[]index = new int[columns.size()];
         try {
-
             br = new BufferedReader(new FileReader(csvFile));
-            Scanner scan = new Scanner(System.in);
-// select * --> line
-// out put coloumn country[ColNumber]
-            //  int ColNumber = scan.nextInt()-1;
             line = br.readLine();
             String[] header = line.split(cvsSplitBy);
-            //   String []Columns = null;
-            int index[] = null;
-            for (int i = 0; i < columns.length; i++) {
+            for (int i = 0; i < columns.size(); i++) {
                 for (int j = 0; j < header.length; j++) {
-                    if (columns[i] == header[j]) {
-                        index[i] = j;
+                    header[j] = header[j].replace("\"", "");
+                    if (header[j].equals(columns.get(i))) {
+                        index[i]=j;
                     }
                 }
             }
-            System.out.println(line);
+            for (int i = 0; i < columns.size(); i++) {
+                System.out.println(index[i]);
+                br = new BufferedReader(new FileReader(csvFile));
             while ((line = br.readLine()) != null) {
                 String[] country = line.split(cvsSplitBy);
-                // Thread.sleep();
-                for (int i = 0; i < index.length; i++) {
-
-                    System.out.print(country[index[i]]+",");
+                    System.out.println(country[index[i]]);
                 }
-                System.out.println();
             }
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

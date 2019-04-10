@@ -23,8 +23,8 @@ public class Main {
           //  Data_Type.printDataTypes();
 
 
-
-            CharStream cs = fromFileName("./assest/code.txt");
+            String filename = "F:\\GithubProject\\CompilerProject\\code.txt";
+            CharStream cs = fromFileName(filename);
             HplsqlLexer lexer = new HplsqlLexer(cs);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             HplsqlParser parser = new HplsqlParser(tokens);
