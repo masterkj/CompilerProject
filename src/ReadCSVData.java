@@ -3,7 +3,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 class ReadCSVData {
 
@@ -26,13 +25,12 @@ class ReadCSVData {
                     }
                 }
             }
-            for (int i = 0; i < columns.size(); i++) {
-                System.out.println(index[i]);
-                br = new BufferedReader(new FileReader(csvFile));
                 while ((line = br.readLine()) != null) {
+                    for (int i = 0; i < columns.size(); i++) {
                     String[] country = line.split(cvsSplitBy);
-                    System.out.println(country[index[i]]);
+                    System.out.print(country[index[i]] + "  ");
                 }
+                    System.out.println();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

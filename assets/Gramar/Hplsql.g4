@@ -545,8 +545,6 @@ select_list_limit :
      ;
 select_list_item :
        column* T_FROM tabname
-
-
        |((ident T_EQUAL)? expr select_list_alias? | select_list_asterisk)
      ;
      column : ident T_COMMA?;
