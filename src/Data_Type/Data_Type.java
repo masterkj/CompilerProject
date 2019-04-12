@@ -7,18 +7,21 @@ import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Data_Type implements Serializable {
     private static Map<String, Variable_form> GLOBAL_ARRAY = new HashMap<>();
-    private static final String JSON_FILE_NAME = "assest\\DATA_TYPE.json";
+    private static final String JSON_FILE_NAME = "./assets/DATA_TYPE.json";
+
     /**
-     *
-     * add DT to the GLOBAL_ARRAY*/
+     * add DT to the GLOBAL_ARRAY
+     */
     public static void set_DT(String DT, Variable_form variables) throws Data_Type.TableDeclaredException, FileNotFoundException {
         if (isDT(DT)) throw new Data_Type.TableDeclaredException(DT + "is laready decleared");
         GLOBAL_ARRAY.put(DT, variables);
 
     }
+
     public static void set_DT(String DT_name, Attribute_form... args) throws FileNotFoundException {
         GLOBAL_ARRAY.put(DT_name, new Variable_form(args));
 
@@ -34,6 +37,7 @@ public class Data_Type implements Serializable {
         throw new Data_Type.DataTypeNotFoundException(DT);
     }
     //TODO: make our Data_Type read from json file by the startup of the program
+
     /**
      * read from json file that store our imparitive and Tables
      *
@@ -41,7 +45,7 @@ public class Data_Type implements Serializable {
      */
     public static void loadDataTypeFile() throws IOException, ParseException {
 
-        Object obj = new JSONParser().parse(new FileReader("f:\\GithubProject\\CompilerProject\\assest\\DATA_TYPE.json"));
+        Object obj = new JSONParser().parse(new FileReader(JSON_FILE_NAME));
 
         JSONArray jsonarr = (JSONArray) obj;
 
@@ -52,9 +56,9 @@ public class Data_Type implements Serializable {
                 JSONObject json = (JSONObject) e;
                 JSONObject filevar = (JSONObject) json.get("Variable_form");
                 boolean isImperative = (Boolean) filevar.get("isImperative");
-                String Delimiter=null;
-                String HDFSPath=null;
-                if(!isImperative){
+                String Delimiter = null;
+                String HDFSPath = null;
+                if (!isImperative) {
                     Delimiter = (String) json.get("Delimiter");
                     HDFSPath = (String) json.get("HDFSPath");
                 }
@@ -90,9 +94,9 @@ public class Data_Type implements Serializable {
 
         JSONObject jvar = new JSONObject();
         jvar.put("isImperative", s.isImperative());
-        if(!s.isImperative()){
-            jvar.put("Delimiter",s.getDelimiter());
-            jvar.put("HDFSPath",s.getHDFSPath());
+        if (!s.isImperative()) {
+            jvar.put("Delimiter", s.getDelimiter());
+            jvar.put("HDFSPath", s.getHDFSPath());
         }
         jvar.put("attributes", aattr);
 
@@ -103,6 +107,7 @@ public class Data_Type implements Serializable {
 
         return json;
     }
+
     /**
      * update the json file every time we make change to the GLOBAL_ARRAY
      */
@@ -125,6 +130,7 @@ public class Data_Type implements Serializable {
             e.printStackTrace();
         }
     }
+
     /**
      * clear all DataTypes without the imperetives DataTypes
      */
@@ -151,6 +157,7 @@ public class Data_Type implements Serializable {
 
         loadDataTypeFile();
     }
+
     /**
      * remove a DT unless it's an imperitive
      */
@@ -189,6 +196,18 @@ public class Data_Type implements Serializable {
     public static String getDelimiter(String dataType) {
         return GLOBAL_ARRAY.get(dataType).getDelimiter();
     }
+
+    public static boolean checkIfItAttributes(String data_type, ArrayList<String> attributeNames) {
+        Variable_form variable_form = GLOBAL_ARRAY.get(data_type);
+        AtomicBoolean result = new AtomicBoolean(true);
+        attributeNames.forEach(e-> {
+            if(!variable_form.isAttribute(e))
+                result.set(false);
+        });
+
+        return result.get();
+    }
+
     /*
     for an undeclared Scope*/
     public static class DataTypeNotFoundException extends ClassNotFoundException {
@@ -196,6 +215,7 @@ public class Data_Type implements Serializable {
             super(DT + " dataType is not found");
         }
     }
+
     /*
     for an already decleard Scope*/
     public static class TableDeclaredException extends Exception {

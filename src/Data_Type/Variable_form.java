@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Variable_form implements Serializable {
     /**
@@ -42,20 +43,15 @@ public class Variable_form implements Serializable {
         Delimiter = delimiter;
     }
 
-    public String getHDFSPath() {
+    String getHDFSPath() {
         return HDFSPath;
     }
 
-    public String getDelimiter() {
+    String getDelimiter() {
         return Delimiter;
     }
 
-    public Variable_form(Attribute_form attribute_form, boolean isImperative) {
-        this.attributes.add(attribute_form);
-        this.isImperative = isImperative;
-    }
-
-    public Variable_form(List<Attribute_form> attributes , boolean isImperative, String delimiter, String HDFSPath) {
+    Variable_form(List<Attribute_form> attributes, boolean isImperative, String delimiter, String HDFSPath) {
         this.attributes=attributes;
         this.isImperative = isImperative;
         if (!isImperative) {
@@ -65,7 +61,7 @@ public class Variable_form implements Serializable {
     }
 
 
-    public Variable_form(Attribute_form... variables) {
+    Variable_form(Attribute_form... variables) {
         Collections.addAll(this.attributes, variables);
     }
 
@@ -77,16 +73,9 @@ public class Variable_form implements Serializable {
         Collections.addAll(attributes, attribute);
     }
 
-    public boolean isImperative() {
+    boolean isImperative() {
         return isImperative;
     }
-
-//    public void printAttriputes() {
-//        for (Attribute_form attribute_form : attributes) {
-//            System.out.println("attripute name: " +
-//                    attribute_form.getName() + "\n attripute type: " + attribute_form.getType());
-//        }
-//    }
 
 
     @Override
@@ -94,7 +83,21 @@ public class Variable_form implements Serializable {
         return "Variable_form{" +
                 "attributes=" + attributes +
                 ", isImperative=" + isImperative +
+                ", HDFSPath='" + HDFSPath + '\'' +
+                ", Delimiter='" + Delimiter + '\'' +
                 '}';
     }
 
+    public void setAttributes(ArrayList<Attribute_form> attributes) {
+        this.attributes.addAll(attributes);
+    }
+
+    boolean isAttribute(String attribute) {
+        AtomicBoolean result = new AtomicBoolean(false);
+        this.attributes.forEach(e-> {
+            if(e.getName().equals(attribute))
+                result.set(true);
+        });
+        return result.get();
+    }
 }
