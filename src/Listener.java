@@ -30,10 +30,10 @@ public class Listener extends HplsqlBaseListener {
         if(!Data_Type.isDT(data_type)){
             //TODO: throw exception
         }
-        ArrayList<String> attrinbuteNames = new ArrayList<>();
+        ArrayList<String> attributeNames = new ArrayList<>();
         ctx.fullselect_stmt().fullselect_stmt_item().get(0).subselect_stmt().select_list().select_list_item(0).column().forEach(e->{
-            attrinbuteNames.add(e.ident().getText());
+            attributeNames.add(e.ident().getText());
         });
-        ReadCSVData.read(attrinbuteNames);
+        ReadCSVData.read(attributeNames);
     }
 }

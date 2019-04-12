@@ -14,17 +14,16 @@ import org.json.simple.parser.ParseException;
 
 public class Main {
     public static void main(String[] args) throws IOException, Data_Type.TableDeclaredException, ParseException {
-//
-           // Data_Type.loadDataTypeFile();
-          ///  Data_Type.clearDataTypeTables();
-           // Data_Type.updateDataTypeFile();
-          //  Data_Type.loadDataTypeFile();
-            //Data_Type.updateDataTypeFile();
-          //  Data_Type.printDataTypes();
+
+//            Data_Type.loadDataTypeFile();
+//            Data_Type.clearDataTypeTables();
+//            Data_Type.updateDataTypeFile();
+//            Data_Type.loadDataTypeFile();
+//            Data_Type.updateDataTypeFile();
+//            Data_Type.printDataTypes();
 
 
-            String filename = "F:\\GithubProject\\CompilerProject\\code.txt";
-            CharStream cs = fromFileName(filename);
+            CharStream cs = fromFileName("assets/code.txt");
             HplsqlLexer lexer = new HplsqlLexer(cs);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             HplsqlParser parser = new HplsqlParser(tokens);
@@ -32,15 +31,6 @@ public class Main {
             Listener listener = new Listener();
             ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
             parseTreeWalker.walk(listener,tree);
-
-
-
-
-
-//            Data_Type.updateDataTypeFile();
-
-
-//            Data_Type.clearDataTypeTables();
 
 
     }

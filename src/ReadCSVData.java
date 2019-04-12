@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class ReadCSVData {
+class ReadCSVData {
 
-    public static void read(ArrayList<String> columns) {
+    static void read(ArrayList<String> columns) {
 
-        String csvFile = "f:/GithubProject/CompilerProject/assest/tempretures.csv";
+        String csvFile = "./assets/temperatures.csv";
         BufferedReader br = null;
         String line = "";
         String cvsSplitBy = ",";
