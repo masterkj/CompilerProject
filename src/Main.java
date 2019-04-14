@@ -18,7 +18,7 @@ public class Main {
         Data_Type.loadDataTypeFile();
 
         CharStream cs = fromFileName("assets/code.txt");
-        HplsqlLexer lexer = new HplsqlLexer(cs);t
+        HplsqlLexer lexer = new HplsqlLexer(cs);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         HplsqlParser parser = new HplsqlParser(tokens);
         ParseTree tree = parser.program();

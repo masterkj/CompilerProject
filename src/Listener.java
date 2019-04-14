@@ -3,8 +3,10 @@ import Data_Type.Data_Type;
 import Data_Type.Variable_form;
 import Hplsql.*;
 import com.sun.prism.PixelFormat;
+import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 public class Listener extends HplsqlBaseListener {
     @Override
@@ -33,6 +35,18 @@ public class Listener extends HplsqlBaseListener {
 
         if(Data_Type.checkIfItAttributes(data_type,attributeNames)) {
             ReadCSVData.read(attributeNames,Data_Type.getHDFSPath(data_type), Data_Type.getDelimiter(data_type));
+        }
+    }
+
+    @Override
+    public void enterWrite_stmt(HplsqlParser.Write_stmtContext ctx) {
+        if(ctx.ident(0).getText().equals("CLEAR")) {
+            try {
+                Data_Type.clearDataTypeTables();
+                System.out.println("DATA_TYPE cleared");
+            } catch (IOException | ParseException | Data_Type.TableDeclaredException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

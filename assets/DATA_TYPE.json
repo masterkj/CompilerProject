@@ -1,0 +1,94 @@
+[
+  {
+    "Variable_form": {
+      "isImperative": true,
+      "attributes": [
+        {
+          "name": "boolean",
+          "type": "boolean"
+        }
+      ]
+    },
+    "DataType": "boolean"
+  },
+  {
+    "Variable_form": {
+      "isImperative": true,
+      "attributes": [
+        {
+          "name": "string",
+          "type": "string"
+        }
+      ]
+    },
+    "DataType": "string"
+  },
+  {
+    "Variable_form": {
+      "Delimiter": null,
+      "HDFSPath": null,
+      "isImperative": false,
+      "attributes": [
+        {
+          "name": "sensorId",
+          "type": "INT"
+        },
+        {
+          "name": "datetime",
+          "type": "BIGINT"
+        },
+        {
+          "name": "temp",
+          "type": "INT"
+        }
+      ]
+    },
+    "DataType": "temperatures"
+  },
+  {
+    "Variable_form": {
+      "isImperative": true,
+      "attributes": [
+        {
+          "name": "real",
+          "type": "real"
+        }
+      ]
+    },
+    "DataType": "real"
+  },
+  {
+    "Variable_form": {
+      "isImperative": true,
+      "attributes": [
+        {
+          "name": "int",
+          "type": "int"
+        }
+      ]
+    },
+    "DataType": "int"
+  },
+  {
+    "Variable_form": {
+      "Delimiter": ",",
+      "HDFSPath": "C:\\HDFS\\users",
+      "isImperative": false,
+      "attributes": [
+        {
+          "name": "name",
+          "type": "STRING"
+        },
+        {
+          "name": "age",
+          "type": "INT"
+        },
+        {
+          "name": "salary",
+          "type": "BIGINT"
+        }
+      ]
+    },
+    "DataType": "users"
+  }
+]
