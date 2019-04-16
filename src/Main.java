@@ -26,6 +26,13 @@ public class Main {
         ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
         parseTreeWalker.walk(listener, tree);
 
+        clearFiles();
+
+
+    }
+
+    private static void clearFiles() {
+
 
     }
 }

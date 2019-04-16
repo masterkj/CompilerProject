@@ -506,11 +506,11 @@ label :
      | T_LESS T_LESS L_ID T_GREATER T_GREATER
      ;
 select_stmt :            // SELECT statement
-       cte_select_stmt? fullselect_stmt
-     ;
+           cte_select_stmt? fullselect_stmt
+         ;
 cte_select_stmt :
-       T_WITH cte_select_stmt_item (T_COMMA cte_select_stmt_item)*
-     ;
+           T_WITH cte_select_stmt_item (T_COMMA cte_select_stmt_item)*
+         ;
 cte_select_stmt_item :
        ident cte_select_cols? T_AS T_OPEN_P fullselect_stmt T_CLOSE_P
      ;
@@ -531,7 +531,7 @@ fullselect_set_clause :
      | T_INTERSECT T_ALL?
      ;
 subselect_stmt :
-       (T_SELECT ) select_list into_clause? from_clause? where_clause? group_by_clause? (having_clause | qualify_clause)? order_by_clause? select_options?
+           (T_SELECT | T_SEL) select_list into_clause? from_clause? where_clause? group_by_clause? (having_clause | qualify_clause)? order_by_clause? select_options?
      ;
 select_list :
        select_list_set? select_list_limit? select_list_item (T_COMMA select_list_item)*
@@ -544,8 +544,7 @@ select_list_limit :
        T_TOP expr
      ;
 select_list_item :
-       column* T_FROM tabname
-       |((ident T_EQUAL)? expr select_list_alias? | select_list_asterisk)
+       ((ident T_EQUAL)? expr select_list_alias? | select_list_asterisk)
      ;
      column : ident T_COMMA?;
      tabname: ident;
@@ -689,7 +688,7 @@ expr_atom :
        date_literal
      | timestamp_literal
      | bool_literal
-     | variable_name
+     | ident
      | string
      | dec_number
      | int_number
@@ -937,14 +936,14 @@ null_const :                              // NULL constant
           | T_FOREIGN
           | T_FORMAT
           | T_FOUND
-          | T_FROM
+//          | T_FROM
           | T_FULL
           | T_FUNCTION
           | T_GET
           | T_GLOBAL
           | T_GO
           | T_GRANT
-          | T_GROUP
+//          | T_GROUP
           | T_HANDLER
           | T_HASH
           | T_HAVING

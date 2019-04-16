@@ -59,8 +59,8 @@ public class Data_Type implements Serializable {
                 String Delimiter = null;
                 String HDFSPath = null;
                 if (!isImperative) {
-                    Delimiter = (String) json.get("Delimiter");
-                    HDFSPath = (String) json.get("HDFSPath");
+                    Delimiter = (String) filevar.get("Delimiter");
+                    HDFSPath = (String) filevar.get("HDFSPath");
                 }
                 JSONArray vararr = (JSONArray) filevar.get("attributes");
                 List<Attribute_form> attributes = new ArrayList<>();

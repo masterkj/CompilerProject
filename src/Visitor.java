@@ -2,7 +2,9 @@ import Data_Type.Attribute_form;
 import Data_Type.Variable_form;
 import Hplsql.HplsqlBaseVisitor;
 import Hplsql.HplsqlParser;
+import codgen.Query;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Visitor<T> extends HplsqlBaseVisitor {
@@ -39,5 +41,44 @@ public class Visitor<T> extends HplsqlBaseVisitor {
         info[1] = info[1].substring(1,info[1].length()-1);
         info[0] = info[0].substring(1,info[0].length()-1);
         return info;
+    }
+
+    @Override
+    public T visitSelect_stmt(HplsqlParser.Select_stmtContext ctx) {
+
+        visit(ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt());
+
+
+
+        return (T) "s";
+    }
+
+    @Override
+    public T visitSubselect_stmt(HplsqlParser.Subselect_stmtContext ctx) {
+        final String finalResultFileName = "finalFile";
+
+        ArrayList<String> columns = (ArrayList<String>) visit(ctx.select_list());
+        return (T)"";
+
+    }
+
+    @Override
+    public ArrayList<String> visitSelect_list(HplsqlParser.Select_listContext ctx) {
+       ctx.select_list_item().forEach(e->visit(e));
+
+        return null;
+    }
+
+    @Override
+    public Object visitSelect_list_item(HplsqlParser.Select_list_itemContext ctx) {
+        String fileName = null;
+        if(ctx.expr().expr_atom()!=null) {
+            try {
+                fileName = Query.startProcess(ctx.expr().expr_atom().ident().getText());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return fileName;
     }
 }
