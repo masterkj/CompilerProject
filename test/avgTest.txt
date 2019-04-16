@@ -1,0 +1,2 @@
+select age, avg(salary)
+group by age
