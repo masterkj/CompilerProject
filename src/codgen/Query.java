@@ -1,6 +1,6 @@
 package codgen;
 
-import Data_Type.Data_Type;
+import codgen.reducers.AggregationFunction;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,20 +14,27 @@ public class Query {
     public static List<String> Tables = new ArrayList<>();
     public static String key;
     final static String OUTPUT_DELIMITER = ",";
-    final static String TEMP_PATH = "./tempFiles";
+    static final String TEMP_PATH = "./tempFiles";
+    static final String RESULT_FILE = "RESULT.csv";
 
 
-    public static String startProcess(String colName) throws IOException {
-        ArrayList<String> fileEntries ;
-        fileEntries = Mapper.map(key,colName,Tables.get(0));
+
+    public static ArrayList<String> startProcess(String colName, String tableName, AggregationFunction aggregationFunction) throws IOException {
+        ArrayList<String> fileEntries;
+        fileEntries = Mapper.map(key, colName, tableName);
 
         Mapper.shuffle(fileEntries);
 
-//        Reducer.reduce(fileEntries,e-> e.get(0));
-        Reducer.reduce(fileEntries,new Sum());
-        Reducer.finalPhaseReduce(fileEntries,new Sum());
+        Reducer.reduce(fileEntries, aggregationFunction);
 
-        return "";
+        return fileEntries;
     }
 
+    public static String getFinalPhaseResult(ArrayList<String> fileEntries, AggregationFunction aggregationFunction) throws IOException {
+        return Reducer.finalPhaseReduce(fileEntries,aggregationFunction);
+    }
+
+    public static void accumulate(ArrayList<String> finalFiles) throws IOException {
+        Reducer.accumulate(finalFiles);
+    }
 }

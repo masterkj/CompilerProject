@@ -197,15 +197,8 @@ public class Data_Type implements Serializable {
         return GLOBAL_ARRAY.get(dataType).getDelimiter();
     }
 
-    public static boolean checkIfItAttributes(String data_type, ArrayList<String> attributeNames) {
-        Variable_form variable_form = GLOBAL_ARRAY.get(data_type);
-        AtomicBoolean result = new AtomicBoolean(true);
-        attributeNames.forEach(e-> {
-            if(!variable_form.isAttribute(e))
-                result.set(false);
-        });
-
-        return result.get();
+    public static boolean checkIfItAttributes(String data_type, String attributeName) {
+        return GLOBAL_ARRAY.get(data_type).isAttribute(attributeName);
     }
 
     /*

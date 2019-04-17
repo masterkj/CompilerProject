@@ -1,4 +1,4 @@
-package codgen;
+package codgen.reducers;
 
 import java.util.ArrayList;
 

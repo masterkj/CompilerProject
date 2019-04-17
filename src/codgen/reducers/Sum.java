@@ -1,8 +1,6 @@
-package codgen;
+package codgen.reducers;
 
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Sum implements AggregationFunction {
     @Override

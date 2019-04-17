@@ -1,13 +1,17 @@
 package codgen;
 
+import codgen.reducers.AggregationFunction;
+
 import java.io.*;
 import java.util.*;
 
 import static codgen.Query.OUTPUT_DELIMITER;
+import static codgen.Query.RESULT_FILE;
 import static codgen.Query.TEMP_PATH;
 
 class Reducer {
 
+    /**reduce the files with the provided aggregationFunction*/
     static void reduce(ArrayList<String> fileEntries, AggregationFunction aggregationFunction) {
         HashMap<String, String> hashMap = new HashMap<>();
 
@@ -27,37 +31,32 @@ class Reducer {
         });
     }
 
-    static void finalPhaseReduce(ArrayList<String> fileEntries,AggregationFunction aggregationFunction) throws IOException {
-//        FileWriter finalFile = new FileWriter(TEMP_PATH + "/finalFile.txt");
-//        BufferedWriter finalFileBuffer = new BufferedWriter(finalFile);
-//        finalFileBuffer.append(readCsvFileHeader(fileEntries.get(0))+"\n");
-//
-//        fileEntries.forEach(e-> {
-//            try {
-//                finalFileBuffer.append(readCsvFile(e));
-//            } catch (IOException e1) {
-//                e1.printStackTrace();
-//            }
-//        });
-//        finalFileBuffer.flush();
+    /**
+     * map and shuffle the fileEntries then reduce them (in one file)
+     */
+    static String finalPhaseReduce(ArrayList<String> fileEntries, AggregationFunction aggregationFunction) throws IOException {
         String finalFileName = "finalFile.csv";
-        mapAndShuffleFinalPhase(fileEntries,finalFileName);
-        reduce(finalFileName,aggregationFunction);
+        mapAndShuffleFinalPhase(fileEntries, finalFileName);
+        reduce(finalFileName, aggregationFunction);
+        return finalFileName;
 
     }
 
+    /**
+     * reduce one file
+     */
     private static void reduce(String finalFileName, AggregationFunction aggregationFunction) {
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add(finalFileName);
-        reduce(arrayList,aggregationFunction);
+        reduce(arrayList, aggregationFunction);
     }
 
     private static void mapAndShuffleFinalPhase(ArrayList<String> fileEntries, String finalFileName) throws IOException {
         FileWriter finalFile = new FileWriter(TEMP_PATH + "/" + finalFileName);
         BufferedWriter finalFileBuffer = new BufferedWriter(finalFile);
-        finalFileBuffer.append(readCsvFileHeader(fileEntries.get(0))+"\n");
+        finalFileBuffer.append(readCsvFileHeader(fileEntries.get(0)) + "\n");
 
-        fileEntries.forEach(e-> {
+        fileEntries.forEach(e -> {
             try {
                 finalFileBuffer.append(readCsvFile(e));
             } catch (IOException e1) {
@@ -76,7 +75,7 @@ class Reducer {
         //escape the file header
         bufferedReader.readLine();
 
-        while((line = bufferedReader.readLine()) !=null) {
+        while ((line = bufferedReader.readLine()) != null) {
             fileResult.append(line + "\n");
         }
         return fileResult.toString();
@@ -150,5 +149,46 @@ class Reducer {
         }
         bufferedReader.close();
         return hashMap;
+    }
+
+    static void accumulate(ArrayList<String> finalFiles) throws IOException {
+        FileWriter finalFile = new FileWriter(TEMP_PATH + "/" + RESULT_FILE);
+        BufferedWriter finalFileBufferWriter = new BufferedWriter(finalFile);
+        List<BufferedReader> bufferedReaders = new ArrayList<>();
+        List<String> fileHeader = new ArrayList<>();
+        List<String> values = new ArrayList<>();
+        finalFiles.forEach(e-> {
+            try {
+                bufferedReaders.add(new BufferedReader(new FileReader(TEMP_PATH + "/"+ e)));
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+        });
+
+
+        boolean endReached = false;
+        while(!endReached) {
+            for (int i=0;i<bufferedReaders.size();i++) {
+                String line;
+                if ((line = bufferedReaders.get(i).readLine()) == null) {
+                    endReached = true;
+                    break;
+                }
+
+                if (i == bufferedReaders.size()-1)
+                    finalFileBufferWriter.append(cutValue(line));
+                else
+                    finalFileBufferWriter.append(cutValue(line)).append(OUTPUT_DELIMITER);
+            }
+            finalFileBufferWriter.append("\n");
+
+        }
+        finalFileBufferWriter.flush();
+
+    }
+
+    private static String cutValue(String line) {
+        String[] splitLine = line.split(OUTPUT_DELIMITER);
+        return splitLine[1];
     }
 }
