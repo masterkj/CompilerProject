@@ -18,6 +18,8 @@
 7. sum(INT)
 
 ###todos:
-1. read line
-2. do map
-3. append it to temp file
+1. RESULT header
+2. display the execution plan
+3. test the avg 
+4. build the functions like subStr() and LEN()..
+5. finish all aggregation function
