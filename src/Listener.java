@@ -43,7 +43,7 @@ public class Listener extends HplsqlBaseListener {
         else
             Query.key = table;
 
-        Visitor<String> queryVisitor = new Visitor<>();
+        Visitor queryVisitor = new Visitor<>();
         queryVisitor.visit(ctx);
 
 

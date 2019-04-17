@@ -1,11 +1,13 @@
 import Data_Type.Data_Type;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.antlr.v4.runtime.CharStreams.fromFileName;
 
 import Hplsql.HplsqlLexer;
 import Hplsql.HplsqlParser;
+import codgen.Query;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -16,6 +18,7 @@ public class Main {
     public static void main(String[] args) throws IOException, Data_Type.TableDeclaredException, ParseException {
 
         Data_Type.loadDataTypeFile();
+        clearFiles();
 
         CharStream cs = fromFileName("assets/code.txt");
         HplsqlLexer lexer = new HplsqlLexer(cs);
@@ -26,13 +29,16 @@ public class Main {
         ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
         parseTreeWalker.walk(listener, tree);
 
-        clearFiles();
+
 
 
     }
 
     private static void clearFiles() {
-
+        File tempFile = new File(Query.TEMP_PATH);
+        for (File file : tempFile.listFiles()) {
+            file.deleteOnExit();
+        }
 
     }
 }

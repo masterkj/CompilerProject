@@ -3,9 +3,11 @@ package codgen;
 import Data_Type.Data_Type;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import static codgen.Query.OUTPUT_DELIMITER;
 import static codgen.Query.TEMP_PATH;
@@ -47,8 +49,9 @@ class Mapper {
             }
 
 
-            FileWriter file = new FileWriter(TEMP_PATH + "/" + fileEntry.getName());
-            fileEntries.add(fileEntry.getName());
+            String fileName = randomSting(6)+".csv";
+            FileWriter file = new FileWriter(TEMP_PATH + "/" + fileName);
+            fileEntries.add(fileName);
             BufferedWriter bufferedWriter = new BufferedWriter(file);
 
             //the file head is the key and the value
@@ -144,5 +147,20 @@ class Mapper {
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add(finalFile);
         shuffle(arrayList);
+    }
+
+
+
+    static String randomSting(int targetStringLength) {
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = leftLimit + (int)
+                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+        return buffer.toString();
     }
 }

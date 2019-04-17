@@ -35,7 +35,7 @@ class Reducer {
      * map and shuffle the fileEntries then reduce them (in one file)
      */
     static String finalPhaseReduce(ArrayList<String> fileEntries, AggregationFunction aggregationFunction) throws IOException {
-        String finalFileName = "finalFile.csv";
+        String finalFileName = "finalFIle_"+Mapper.randomSting(3)+".csv";
         mapAndShuffleFinalPhase(fileEntries, finalFileName);
         reduce(finalFileName, aggregationFunction);
         return finalFileName;
