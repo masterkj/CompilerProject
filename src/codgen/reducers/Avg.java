@@ -5,11 +5,11 @@ import java.util.ArrayList;
 public class Avg implements AggregationFunction {
     @Override
     public String reduce(ArrayList<String> values) {
-        Integer sum = 0;
-        ArrayList<Integer> integerValues = new ArrayList<>();
-        values.forEach(e->integerValues.add(Integer.parseInt(e)));
+        Double sum = 0.0;
+        ArrayList<Double> integerValues = new ArrayList<>();
+        values.forEach(e->integerValues.add(Double.parseDouble(e)));
 
-        for(Integer value : integerValues)
+        for(Double value : integerValues)
             sum+=value;
         return String.valueOf(sum/values.size());
     }

@@ -10,6 +10,12 @@ public interface AggregationFunction {
             return new Sum();
         if(aggregationFunctionName.equals("avg"))
             return new Avg();
+        if(aggregationFunctionName.equals("min"))
+            return new Min();
+        if(aggregationFunctionName.equals("max"))
+            return new Max();
+        if(aggregationFunctionName.equals("count"))
+            return new Count();
         return null;
     }
 }
