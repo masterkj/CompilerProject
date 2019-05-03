@@ -93,11 +93,11 @@ public class Variable_form implements Serializable {
     }
 
     boolean isAttribute(String attribute) {
-        AtomicBoolean result = new AtomicBoolean(false);
-        this.attributes.forEach(e-> {
+
+        for (Attribute_form e : attributes) {
             if(e.getName().equals(attribute))
-                result.set(true);
-        });
-        return result.get();
+                return true;
+        }
+        return false;
     }
 }

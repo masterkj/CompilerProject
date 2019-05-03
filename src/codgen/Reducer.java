@@ -31,16 +31,6 @@ class Reducer {
         });
     }
 
-    /**
-     * map and shuffle the fileEntries then reduce them (in one file)
-     */
-    static String finalPhaseReduce(ArrayList<String> fileEntries, AggregationFunction aggregationFunction) throws IOException {
-        String finalFileName = "finalFIle_"+Mapper.randomSting(3)+".csv";
-        mapAndShuffleFinalPhase(fileEntries, finalFileName);
-        reduce(finalFileName, aggregationFunction);
-        return finalFileName;
-
-    }
 
     /**
      * reduce one file
@@ -141,7 +131,7 @@ class Reducer {
         HashMap<String, String> hashMap = new HashMap<>();
         //while the reader don't reach the end of the file
         while ((line = bufferedReader.readLine()) != null) {
-            //row now is about tow columns; the key is row[0] and the value is row[1]
+            //row now is about tow columns; the keys is row[0] and the value is row[1]
             String[] row = line.split(OUTPUT_DELIMITER);
 
             hashMap.put(row[0],

@@ -2,6 +2,9 @@ import Data_Type.Data_Type;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 
 import static org.antlr.v4.runtime.CharStreams.fromFileName;
 
@@ -29,16 +32,19 @@ public class Main {
         ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
         parseTreeWalker.walk(listener, tree);
 
-
-
-
     }
 
-    private static void clearFiles() {
+    private static void clearFiles() throws IOException {
         File tempFile = new File(Query.TEMP_PATH);
         for (File file : tempFile.listFiles()) {
-            file.deleteOnExit();
+            deleteDirectoryStream(file.toPath());
         }
+    }
 
+    static void deleteDirectoryStream(Path path) throws IOException {
+        Files.walk(path)
+                .sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .forEach(File::delete);
     }
 }

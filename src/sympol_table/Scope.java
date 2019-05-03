@@ -20,7 +20,7 @@ public class Scope {
      * if it Table so will initialize it and put it in the table
      */
     void addVar(String varName, String DT) throws VarAlreadyDeclaredException, Data_Type.DataTypeNotFoundException {
-        if (varName == null) throw new IllegalArgumentException("called DeclareVariable with null key");
+        if (varName == null) throw new IllegalArgumentException("called DeclareVariable with null keys");
         if (contains(varName)) throw new VarAlreadyDeclaredException(varName);
         if (!Data_Type.isDT(DT)) throw new Data_Type.DataTypeNotFoundException(DT);
         if (Data_Type.isImperative(DT)) {
@@ -51,7 +51,7 @@ public class Scope {
      * to ensure that an variable is existed in the Scope
      */
     private boolean contains(String varName) {
-        if (varName == null) throw new IllegalArgumentException("called contaisns() with null key");
+        if (varName == null) throw new IllegalArgumentException("called contaisns() with null keys");
         return table.containsKey(varName);
     }
 

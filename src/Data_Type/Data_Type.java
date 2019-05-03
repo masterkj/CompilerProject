@@ -31,10 +31,10 @@ public class Data_Type implements Serializable {
         return GLOBAL_ARRAY.getOrDefault(DT, null) != null;
     }
 
-    static public Variable_form get_DT(String DT) throws Data_Type.DataTypeNotFoundException {
+    static public Variable_form get_DT(String DT) throws DataTypeNotFoundException {
         if (isDT(DT))
             return GLOBAL_ARRAY.get(DT);
-        throw new Data_Type.DataTypeNotFoundException(DT);
+        throw new DataTypeNotFoundException(DT);
     }
     //TODO: make our Data_Type read from json file by the startup of the program
 
@@ -129,6 +129,10 @@ public class Data_Type implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isAttribute(String tableName, String attributeName) throws DataTypeNotFoundException {
+            return Objects.requireNonNull(get_DT(tableName)).isAttribute(attributeName);
     }
 
     /**
