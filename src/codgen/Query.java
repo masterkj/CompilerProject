@@ -43,39 +43,15 @@ public class Query {
             values.add(value);
     }
 
-
-//    public static ArrayList<String> startProcess(String colName, String tableName) throws IOException {
-//        ArrayList<String> fileEntries;
-//        fileEntries = Mapper.map(keys, colName, tableName);
-//
-//        Mapper.shuffle(fileEntries);
-//
-////        Reducer.reduce(fileEntries, aggregationFunction);
-//
-//        return fileEntries;
-//    }
-
-    /**
-     * the finalPhaseFile is the file
-     * have all the process files in one file
-     */
-//    public static String getFinalPhaseResult(ArrayList<String> fileEntries, AggregationFunction aggregationFunction) throws IOException {
-//        return Reducer.finalPhaseReduce(fileEntries, aggregationFunction);
-//    }
-
-    /**
-     * accumulate all the finalPhaseFiles
-     * get our result finally
-     */
-//    public static void accumulate(ArrayList<String> finalFiles) throws IOException {
-//        Reducer.accumulate(finalFiles);
-//    }
-
     /**
      * reduce the files with the given aggregation function*/
-//    public static void reduce(ArrayList<String> fileEntries, AggregationFunction aggregationFunction) {
-//        Reducer.reduce(fileEntries, aggregationFunction);
-//    }
+    public static void reduce(String sourceFile, AggregationFunction aggregationFunction, String reduceFileName) {
+        try {
+            Reducer.reduce(sourceFile, aggregationFunction, reduceFileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static class AttributeWithoutTableException extends Exception{
         AttributeWithoutTableException(String s){

@@ -139,7 +139,7 @@ class Mapper {
 
     private static void finalShuffle(String valueName) throws IOException {
         File shuffledFilesDir = new File(TEMP_PATH + "/" + valueName + "/shuffles");
-        BufferedWriter finalShuffledFile = new BufferedWriter(new FileWriter(TEMP_PATH + "/" + valueName + "/finalShuffleFile.csv"));
+        BufferedWriter finalShuffledFile = new BufferedWriter(new FileWriter(TEMP_PATH + "/" + valueName + "/main.csv"));
         HashMap<String, ArrayList<String>> finalShuffledFileMap = new HashMap<>();
         HashMap<String, ArrayList<String>> currentFileMap = new HashMap<>();
         boolean headerGotten = false;
@@ -211,7 +211,7 @@ class Mapper {
         return shuffledMap;
     }
 
-    private static void createDire(String mapPath) {
+    static void createDire(String mapPath) {
         File fileDirectory = new File(mapPath);
         if (!fileDirectory.exists()) {
             fileDirectory.mkdirs();

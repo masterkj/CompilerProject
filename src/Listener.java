@@ -70,9 +70,7 @@ public class Listener extends HplsqlBaseListener {
         }
 
 
-//        Visitor queryVisitor = new Visitor<>();
-//        queryVisitor.visit(ctx);
-
+        new Visitor().visit(ctx);
 
 //
 //        if(Data_Type.checkIfItAttributes(data_type,attributeNames)) {
