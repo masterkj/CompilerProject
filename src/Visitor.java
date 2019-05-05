@@ -4,11 +4,10 @@ import Data_Type.Variable_form;
 import Hplsql.HplsqlBaseVisitor;
 import Hplsql.HplsqlParser;
 import codgen.reducers.AggregationFunction;
-import codgen.reducers.PickAny;
 import codgen.Query;
-import codgen.reducers.Sum;
+import sympol_table.Scope;
+import sympol_table.Symbol_table;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,13 +65,16 @@ public class Visitor<T> extends HplsqlBaseVisitor {
     public String visitSubselect_stmt(HplsqlParser.Subselect_stmtContext ctx) {
         final String finalResultFileName = "finalFile";
 
-        visit(ctx.select_list());
+
+            visit(ctx.select_list());
+        return "";
+    }
 
 //            Query.accumulateReducers();
 
-        return "";
 
-    }
+
+
 
     @Override
     public String visitSelect_list(HplsqlParser.Select_listContext ctx) {
@@ -125,6 +127,31 @@ public class Visitor<T> extends HplsqlBaseVisitor {
             }
         }
         return colName;
+    }
+
+    @Override
+    public Object visitInit_expression_cpp_stmt(HplsqlParser.Init_expression_cpp_stmtContext ctx) {
+
+        String dType = ctx.declear_variable().dtype().getText();
+
+        if (!Data_Type.isDT(dType)) {
+            try {
+                throw new Data_Type.DataTypeNotFoundException(dType);
+            }
+             catch (Data_Type.DataTypeNotFoundException e) {
+                e.printStackTrace();
+            }
+        }else{
+            String varName=ctx.declear_variable().ident().getText();
+            try {
+                Symbol_table.addVar(varName,dType);
+            } catch (Scope.VarAlreadyDeclaredException e) {
+                e.printStackTrace();
+            } catch (Data_Type.DataTypeNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     /**
@@ -185,5 +212,18 @@ public class Visitor<T> extends HplsqlBaseVisitor {
 
     static class NestedAggregationFunctionException extends  Exception{
         NestedAggregationFunctionException(String s) { super(s + "is in another aggregation function");}
+    }
+
+
+    static class GroupByException extends  Exception{
+        GroupByException(String column) {
+            super(column + " Is Not Found In Group By");
+        }
+    }
+
+    static class GroupByAggriException extends  Exception{
+        GroupByAggriException() {
+            super("Group by cannot contain aggrigation function");
+        }
     }
 }

@@ -49,10 +49,20 @@ public class Listener extends HplsqlBaseListener {
         }
         Query.Tables.addAll(tables);
 
+        ArrayList<String>groupbyArgs=new ArrayList<>();
+
         //add keys
         if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().group_by_clause() != null)
             ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().group_by_clause().expr().forEach(e->{
+                if(e.expr_agg_window_func()!=null){
+                    try {
+                        throw new Visitor.GroupByAggriException();
+                    } catch (Visitor.GroupByAggriException e1) {
+                        e1.printStackTrace();
+                    }
+                }
                 Query.keys.add(e.expr_atom().ident().getText());
+                groupbyArgs.add(e.expr_atom().ident().getText());
             });
         else
             Query.keys.add(Query.Tables.get(0));
@@ -60,6 +70,14 @@ public class Listener extends HplsqlBaseListener {
         //add values for the shuffled map
         ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().select_list().select_list_item().forEach(e->{
             Query.addValue(getValue(e));
+            String column=e.expr().expr_atom().ident().getText();
+            if(!groupbyArgs.contains(column)){
+                try {
+                    throw new Visitor.GroupByException(column);
+                } catch (Visitor.GroupByException e1) {
+                    e1.printStackTrace();
+                }
+            }
         });
 
         //do final shuffled files
