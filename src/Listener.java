@@ -62,11 +62,18 @@ public class Listener extends HplsqlBaseListener {
             Query.addValue(getValue(e));
         });
 
+        //if there isn't join
         //do final shuffled files
+        if(Query.Tables.size() == 1)
         try {
             Query.prepareShuffledFiles();
         } catch (Query.AttributeWithoutTableException | IOException e) {
             e.printStackTrace();
+        }
+
+        else {
+            //get the whole tables files
+            //merge it in one file
         }
 
 

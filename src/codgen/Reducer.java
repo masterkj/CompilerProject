@@ -14,12 +14,12 @@ class Reducer {
 
     /**
      * read the shuffled file,
-     * reduce it by the  aggregationFunction,
+     * flat it by the  aggregationFunction,
      * return the result in hashMap
      */
-    static void reduce(String sourceFileName, AggregationFunction aggregationFunction, String reduceFileName) throws IOException {
+    static void reduce(String sourceFilePath, AggregationFunction aggregationFunction, String reduceFileName) throws IOException {
 
-        String sourceFilePath = TEMP_PATH + "/" + sourceFileName + "/main.csv";
+
 
         //create the Reduces dir
         String reducePath = TEMP_PATH + "/Reduces";
@@ -28,7 +28,7 @@ class Reducer {
         //create buffered writer for the reduceFile
         BufferedWriter reducedFile = new BufferedWriter(new FileWriter(reducePath + "/" + reduceFileName + ".csv"));
 
-        BufferedReader sourceFile = new BufferedReader(new FileReader(sourceFilePath));
+                BufferedReader sourceFile = new BufferedReader(new FileReader(sourceFilePath));
 
         reducedFile.append(sourceFile.readLine()).append("\n");
         String line;

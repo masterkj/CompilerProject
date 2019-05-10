@@ -159,14 +159,14 @@ class Mapper {
 
     }
 
-    private static String getHeader(File shuffledFile) throws IOException {
+    static String getHeader(File shuffledFile) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(shuffledFile));
         String line = bufferedReader.readLine();
         bufferedReader.close();
         return line;
     }
 
-    private static void writeShuffledMap(BufferedWriter finalShuffledFile, HashMap<String, ArrayList<String>> finalShuffledFileMap) throws IOException {
+    public static void writeShuffledMap(BufferedWriter finalShuffledFile, HashMap<String, ArrayList<String>> finalShuffledFileMap) throws IOException {
 
         finalShuffledFileMap.forEach((k, v) -> {
             try {
@@ -195,7 +195,7 @@ class Mapper {
         });
     }
 
-    private static HashMap<String, ArrayList<String>> shuffledFileToMap(File shuffledFile) throws IOException {
+    static HashMap<String, ArrayList<String>> shuffledFileToMap(File shuffledFile) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(shuffledFile));
         HashMap<String, ArrayList<String>> shuffledMap = new HashMap<>();
 

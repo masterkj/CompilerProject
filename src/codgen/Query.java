@@ -9,7 +9,6 @@ import java.util.List;
 
 public class Query {
     //TODO: many tables
-    //TODO: many group by columns
     //TODO: if not keys, noy group by -> the keys is incremental
 
     public static List<String> Tables = new ArrayList<>();
@@ -18,12 +17,16 @@ public class Query {
     final static String OUTPUT_DELIMITER = ",";
     public static final String TEMP_PATH = "./tempFiles";
     static final String RESULT_FILE = "RESULT.csv";
+    public static final String OUTPUT_FLAT_PATH = "./tempFiles/flat";
+    public static boolean shufflePhaseEnded = false;
+
 
     public static void prepareShuffledFiles() throws AttributeWithoutTableException, IOException {
         for (String value : values) {
             Mapper.map(keys,value,getTable(value));
             Mapper.shuffle(value);
         }
+        shufflePhaseEnded = true;
     }
 
     private static String getTable(String value) throws AttributeWithoutTableException {
@@ -44,13 +47,17 @@ public class Query {
     }
 
     /**
-     * reduce the files with the given aggregation function*/
-    public static void reduce(String sourceFile, AggregationFunction aggregationFunction, String reduceFileName) {
+     * flat the files with the given aggregation function*/
+    public static void reduce(String sourceFilePath, AggregationFunction aggregationFunction, String reduceFileName) {
         try {
-            Reducer.reduce(sourceFile, aggregationFunction, reduceFileName);
+            Reducer.reduce(sourceFilePath, aggregationFunction, reduceFileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void accumulateReducers() {
+
     }
 
     public static class AttributeWithoutTableException extends Exception{

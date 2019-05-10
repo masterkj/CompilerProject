@@ -3,14 +3,19 @@ import Data_Type.Data_Type;
 import Data_Type.Variable_form;
 import Hplsql.HplsqlBaseVisitor;
 import Hplsql.HplsqlParser;
+import codgen.FlatProcess;
 import codgen.reducers.AggregationFunction;
 import codgen.reducers.PickAny;
 import codgen.Query;
 import codgen.reducers.Sum;
+import codgen.row_functions.RowFunction;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static codgen.Query.OUTPUT_FLAT_PATH;
+import static codgen.Query.TEMP_PATH;
 
 public class Visitor<T> extends HplsqlBaseVisitor {
     @Override
@@ -64,11 +69,9 @@ public class Visitor<T> extends HplsqlBaseVisitor {
 
     @Override
     public String visitSubselect_stmt(HplsqlParser.Subselect_stmtContext ctx) {
-        final String finalResultFileName = "finalFile";
-
         visit(ctx.select_list());
 
-//            Query.accumulateReducers();
+        Query.accumulateReducers();
 
         return "";
 
@@ -92,12 +95,19 @@ public class Visitor<T> extends HplsqlBaseVisitor {
 
     @Override
     public String visitExpr_agg_window_func(HplsqlParser.Expr_agg_window_funcContext ctx) {
+        //TODO: sum(salary) s
 
         //visit the param if it col or aggregation function so.. , and get the fileEntries
         String colName = (String) visit(ctx.agg_param());
+        String sourceFilePath = null;
+        if (ctx.agg_param().expr().expr_func() == null)
+            sourceFilePath = TEMP_PATH + "/" + colName + "/main.csv";
+        else
+            sourceFilePath = OUTPUT_FLAT_PATH + "/" + ctx.agg_param().expr().expr_func().getText()+".csv";
 
-        //reduce them by the aggregation function
-        Query.reduce(ctx.agg_param().getText(), AggregationFunction.choseReducer(ctx.getChild(0).getText()), ctx.getText());
+        //flat them by the aggregation function
+
+        Query.reduce(sourceFilePath, AggregationFunction.choseReducer(ctx.getChild(0).getText()), ctx.getText());
 
         return "";
     }
@@ -107,7 +117,7 @@ public class Visitor<T> extends HplsqlBaseVisitor {
         ArrayList<String> fileEntries = null;
 
         String colName = null;
-        // if it an col then get the shuffled map files without reduce
+        // if it an col then get the shuffled map files without flat
         if (ctx.expr().expr_atom() != null) {
             colName = getColName(ctx.expr());
         } else {
@@ -120,15 +130,49 @@ public class Visitor<T> extends HplsqlBaseVisitor {
                     e.printStackTrace();
                 }
             }
-            if(ctx.expr().expr_func() != null){
+            if (ctx.expr().expr_func() != null) {
                 colName = (String) visit(ctx.expr().expr_func());
             }
         }
         return colName;
     }
 
+    @Override
+    public String visitExpr_func(HplsqlParser.Expr_funcContext ctx) {
+        //funcparam.expr.exprdunc
+        //funcparam.idnet
+
+        String colName = null;
+
+        HplsqlParser.IdentContext colRule;
+        HplsqlParser.Expr_funcContext funcRule;
+        if ((colRule = ctx.expr_func_params().func_param(0).ident()) != null) {
+            colName = colRule.getText();
+
+            if (Query.shufflePhaseEnded)
+                try {
+                    FlatProcess.flat(TEMP_PATH + "/" + colName + "/main.csv", RowFunction.choseFunction(ctx), ctx.expr_func_params().getText());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+        } else if ((funcRule = ctx.expr_func_params().func_param(0).expr().expr_func()) != null) {
+
+            colName = (String) visit(funcRule);
+            if (Query.shufflePhaseEnded)
+                try {
+                    FlatProcess.flat(TEMP_PATH + "/flat/" + funcRule.getText() + ".csv", RowFunction.choseFunction(ctx), ctx.expr_func_params().getText());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+        }
+        return colName;
+    }
+
     /**
-     * get file entries for col that contained map and shuffles without reduce
+     * get file entries for col that contained map and shuffles without flat
      */
     private String getColName(HplsqlParser.ExprContext ctx) {
         String colName = ctx.expr_atom().ident().getText();
@@ -183,7 +227,9 @@ public class Visitor<T> extends HplsqlBaseVisitor {
         }
     }
 
-    static class NestedAggregationFunctionException extends  Exception{
-        NestedAggregationFunctionException(String s) { super(s + "is in another aggregation function");}
+    static class NestedAggregationFunctionException extends Exception {
+        NestedAggregationFunctionException(String s) {
+            super(s + "is in another aggregation function");
+        }
     }
 }
