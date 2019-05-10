@@ -113,7 +113,7 @@ public class Scope {
         }
     }
 
-    static class VarAlreadyDeclaredException extends Exception {
+    public static class VarAlreadyDeclaredException extends Exception {
         VarAlreadyDeclaredException(String varName) {
             super(varName + " is already declared in this scope");
         }

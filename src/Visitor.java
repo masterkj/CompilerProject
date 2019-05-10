@@ -5,10 +5,12 @@ import Hplsql.HplsqlBaseVisitor;
 import Hplsql.HplsqlParser;
 import codgen.FlatProcess;
 import codgen.reducers.AggregationFunction;
-import codgen.reducers.PickAny;
 import codgen.Query;
-import codgen.reducers.Sum;
 import codgen.row_functions.RowFunction;
+
+import sympol_table.Scope;
+import sympol_table.Symbol_table;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,13 +71,12 @@ public class Visitor<T> extends HplsqlBaseVisitor {
 
     @Override
     public String visitSubselect_stmt(HplsqlParser.Subselect_stmtContext ctx) {
+
         visit(ctx.select_list());
-
         Query.accumulateReducers();
-
         return "";
-
     }
+
 
     @Override
     public String visitSelect_list(HplsqlParser.Select_listContext ctx) {
@@ -103,7 +104,7 @@ public class Visitor<T> extends HplsqlBaseVisitor {
         if (ctx.agg_param().expr().expr_func() == null)
             sourceFilePath = TEMP_PATH + "/" + colName + "/main.csv";
         else
-            sourceFilePath = OUTPUT_FLAT_PATH + "/" + ctx.agg_param().expr().expr_func().getText()+".csv";
+            sourceFilePath = OUTPUT_FLAT_PATH + "/" + ctx.agg_param().expr().expr_func().getText() + ".csv";
 
         //flat them by the aggregation function
 
@@ -171,65 +172,103 @@ public class Visitor<T> extends HplsqlBaseVisitor {
         return colName;
     }
 
-    /**
-     * get file entries for col that contained map and shuffles without flat
-     */
-    private String getColName(HplsqlParser.ExprContext ctx) {
-        String colName = ctx.expr_atom().ident().getText();
 
-        String tableName = colExistedInTable(ctx, Query.Tables);
+    @Override
+    public Object visitInit_expression_cpp_stmt (HplsqlParser.Init_expression_cpp_stmtContext ctx){
 
-        try {
-            if (tableName == null)
-                throw new ColumnNotContainedException(colName);
-        } catch (ColumnNotContainedException e) {
-            e.printStackTrace();
+            String dType = ctx.declear_variable().dtype().getText();
+
+            if (!Data_Type.isDT(dType)) {
+                try {
+                    throw new Data_Type.DataTypeNotFoundException(dType);
+                } catch (Data_Type.DataTypeNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                String varName = ctx.declear_variable().ident().getText();
+                try {
+                    Symbol_table.addVar(varName, dType);
+                } catch (Scope.VarAlreadyDeclaredException e) {
+                    e.printStackTrace();
+                } catch (Data_Type.DataTypeNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
         }
-        return colName;
 
-    }
+        /**
+         * get file entries for col that contained map and shuffles without flat
+         */
+        private String getColName (HplsqlParser.ExprContext ctx){
+            String colName = ctx.expr_atom().ident().getText();
 
-    /**
-     * to find if column existed in any table and
-     * there is no conflict
-     */
-    private String colExistedInTable(HplsqlParser.ExprContext ctx, List<String> tables) {
-        boolean status = false;
-        String tableName = null;
-        String colName = ctx.expr_atom().ident().getText();
+            String tableName = colExistedInTable(ctx, Query.Tables);
 
+            try {
+                if (tableName == null)
+                    throw new ColumnNotContainedException(colName);
+            } catch (ColumnNotContainedException e) {
+                e.printStackTrace();
+            }
+            return colName;
 
-        //check if col existed in table and there is no conflict
-        for (String table : Query.Tables) {
-            if (Data_Type.checkIfItAttributes(table, colName))
-                if (!status) {
-                    status = true;
-                    tableName = table;
-                } else
-                    try {
-                        throw new ColumnConflictException(colName);
-                    } catch (ColumnConflictException e) {
-                        e.printStackTrace();
-                    }
         }
-        return tableName;
-    }
 
-    static class ColumnConflictException extends Exception {
-        ColumnConflictException(String s) {
-            super(s + "is in more than one table");
+        /**
+         * to find if column existed in any table and
+         * there is no conflict
+         */
+        private String colExistedInTable (HplsqlParser.ExprContext ctx, List < String > tables){
+            boolean status = false;
+            String tableName = null;
+            String colName = ctx.expr_atom().ident().getText();
+
+
+            //check if col existed in table and there is no conflict
+            for (String table : Query.Tables) {
+                if (Data_Type.checkIfItAttributes(table, colName))
+                    if (!status) {
+                        status = true;
+                        tableName = table;
+                    } else
+                        try {
+                            throw new ColumnConflictException(colName);
+                        } catch (ColumnConflictException e) {
+                            e.printStackTrace();
+                        }
+            }
+            return tableName;
+        }
+
+        static class ColumnConflictException extends Exception {
+            ColumnConflictException(String s) {
+                super(s + "is in more than one table");
+            }
+        }
+
+        static class ColumnNotContainedException extends Exception {
+            ColumnNotContainedException(String s) {
+                super(s + "is not contained in any table");
+            }
+        }
+
+        static class NestedAggregationFunctionException extends Exception {
+            NestedAggregationFunctionException(String s) {
+                super(s + "is in another aggregation function");
+            }
+        }
+
+
+        static class GroupByException extends Exception {
+            GroupByException(String column) {
+                super(column + " Is Not Found In Group By");
+            }
+        }
+
+        static class GroupByAggriException extends Exception {
+            GroupByAggriException() {
+                super("Group by cannot contain aggrigation function");
+            }
         }
     }
-
-    static class ColumnNotContainedException extends Exception {
-        ColumnNotContainedException(String s) {
-            super(s + "is not contained in any table");
-        }
-    }
-
-    static class NestedAggregationFunctionException extends Exception {
-        NestedAggregationFunctionException(String s) {
-            super(s + "is in another aggregation function");
-        }
-    }
-}
