@@ -59,6 +59,50 @@
   },
   {
     "Variable_form": {
+      "Delimiter": ",",
+      "HDFSPath": "C:\\HDFS\\departments",
+      "isImperative": false,
+      "attributes": [
+        {
+          "name": "name",
+          "type": "STRING"
+        },
+        {
+          "name": "department_id",
+          "type": "INT"
+        }
+      ]
+    },
+    "DataType": "departments"
+  },
+  {
+    "Variable_form": {
+      "Delimiter": "|",
+      "HDFSPath": "C:\\HDFS\\employees",
+      "isImperative": false,
+      "attributes": [
+        {
+          "name": "age",
+          "type": "INT"
+        },
+        {
+          "name": "salary",
+          "type": "BIGINT"
+        },
+        {
+          "name": "name",
+          "type": "STRING"
+        },
+        {
+          "name": "department_id",
+          "type": "INT"
+        }
+      ]
+    },
+    "DataType": "employees"
+  },
+  {
+    "Variable_form": {
       "isImperative": true,
       "attributes": [
         {

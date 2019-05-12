@@ -21,7 +21,7 @@ public class Main {
     public static void main(String[] args) throws IOException, Data_Type.TableDeclaredException, ParseException {
 
         Data_Type.loadDataTypeFile();
-//        clearFiles();
+        clearFiles();
 
         CharStream cs = fromFileName("assets/code.txt");
         HplsqlLexer lexer = new HplsqlLexer(cs);

@@ -27,7 +27,8 @@ class Mapper {
             line = br.readLine();
 
             //read the headLine
-            String[] header = line.split(inputDelimiter);
+            String splitRegex = "["+Data_Type.getDelimiter(table)+"]";
+            String[] header = line.split(splitRegex);
 
 
             int colIndex = 0;
@@ -63,7 +64,7 @@ class Mapper {
             //while the reader don't reach the end of the file
             while ((line = br.readLine()) != null) {
 
-                String[] row = line.split(OUTPUT_DELIMITER);
+                String[] row = line.split(splitRegex);
 
                 //if the keys is a col (there is a group by)
                 if (keys.size() >= 1 && !keys.get(0).equals(table)) {
