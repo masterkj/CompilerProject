@@ -13,6 +13,8 @@ public interface RowFunction {
             return new Len();
         if (ctx.getChild(0).getText().equals("substr"))
             return new Substr(ctx.expr_func_params().func_param(1).getText(),ctx.expr_func_params().func_param(2).getText());
+       // if (ctx.getChild(0).getText().equals("round"))
+          //  return new Round();
         return null;
     }
 
