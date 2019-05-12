@@ -5,21 +5,21 @@ import java.util.ArrayList;
 
 public class Round implements RowFunction {
 
-    private String degree;
-    private String factor = "0";
+    private double degree;
+    private double factor = 0;
 
     public Round() {
-        this.degree = "0";
-        this.factor = "0";
+        this.degree = 0;
+        this.factor = 0;
     }
 
     public Round(String degree) {
-        this.degree = degree;
+        this.degree = Double.parseDouble(degree);
     }
 
     public Round(String degree, String factor) {
-        this.degree = degree;
-        this.factor = factor;
+        this.degree = Double.parseDouble(degree);
+        this.factor = Double.parseDouble(factor);
     }
 
     @Override
@@ -28,8 +28,6 @@ public class Round implements RowFunction {
         ArrayList<String> result = new ArrayList<>();
         values.forEach(e -> {
             double number = Float.parseFloat(e);
-            double factor=Double.parseDouble(this.factor);
-            double degree =Double.parseDouble(this.degree);
             if (factor == 0)
                 if (degree == 0)
                     result.add(String.valueOf(Math.ceil(number)));
@@ -56,7 +54,6 @@ public class Round implements RowFunction {
 
     public double fractionalPart(double number) {
 
-        double degree=Double.parseDouble(this.degree);
         int decimal = (int) number;
         double fractional = (number - decimal) * Math.pow(10, degree);
         int decimal2 = (int) fractional;
