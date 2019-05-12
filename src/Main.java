@@ -20,18 +20,6 @@ import org.json.simple.parser.ParseException;
 public class Main {
     public static void main(String[] args) throws IOException, Data_Type.TableDeclaredException, ParseException {
 
-
-        String x="012345";
-        String y=x.substring(0,x.indexOf('3'));
-
-        System.out.println(x);
-        System.out.println(y);
-        System.out.println(x);
-        System.out.println(x.indexOf('3'));
-
-
-        System.out.println(Math.round(21.75456));
-
         Data_Type.loadDataTypeFile();
         clearFiles();
 
