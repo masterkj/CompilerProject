@@ -1,11 +1,5 @@
 package sympol_table;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import Data_Type.Data_Type;
-import Data_Type.Variable_form;
-import Data_Type.Attribute_form;
 
 abstract class Var {
 

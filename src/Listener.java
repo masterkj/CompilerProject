@@ -3,6 +3,8 @@ import Data_Type.Variable_form;
 import Hplsql.*;
 import codgen.Query;
 import org.json.simple.parser.ParseException;
+import sympol_table.Scope;
+import sympol_table.Symbol_table;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,6 +37,24 @@ public class Listener extends HplsqlBaseListener {
         String table1 = ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().table_name().ident().getText();
         tables.add(table1);
 
+      //  if(ctx.fullselect_stmt().fullselect_stmt_item().get(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().from_alias_clause().ident()==null)
+
+            try {
+                String alias = ctx.fullselect_stmt().fullselect_stmt_item().get(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().from_alias_clause().ident().getText();
+
+                if (alias != null) {
+                    try {
+                        Symbol_table.addVar(alias, table1);
+                    } catch (Scope.VarAlreadyDeclaredException e) {
+                        e.printStackTrace();
+                    } catch (Data_Type.DataTypeNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }catch (NullPointerException e){
+
+            }
+
         ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().from_clause().from_join_clause().forEach(e->{
             tables.add(e.from_table_clause().from_table_name_clause().table_name().ident().getText());
         });
@@ -52,7 +72,7 @@ public class Listener extends HplsqlBaseListener {
 //        ArrayList<String>groupbyArgs=new ArrayList<>();
 
         //add keys
-        if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().group_by_clause() != null)
+        if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().group_by_clause() != null){
             ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().group_by_clause().expr().forEach(e->{
                 if(e.expr_agg_window_func()!=null){
                     try {
@@ -61,25 +81,31 @@ public class Listener extends HplsqlBaseListener {
                         e1.printStackTrace();
                     }
                 }
+                if(e.expr_atom().ident()!=null)
                 Query.keys.add(e.expr_atom().ident().getText());
 //                groupbyArgs.add(e.expr_atom().ident().getText());
             });
+
+
+            ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().select_list().select_list_item().forEach(e->{
+                Query.addValue(getValue(e));
+                HplsqlParser.Expr_atomContext column ;
+                if((column =e.expr().expr_atom())!=null)
+                    if(!Query.keys.contains(column.getText())){
+                        try {
+                            throw new Visitor.GroupByException(column.getText());
+                        } catch (Visitor.GroupByException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+            });
+
+        }
         else
             Query.keys.add(Query.Tables.get(0));
 
         //add values for the shuffled map
-        ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().select_list().select_list_item().forEach(e->{
-            Query.addValue(getValue(e));
-            HplsqlParser.Expr_atomContext column ;
-            if((column =e.expr().expr_atom())!=null)
-            if(!Query.keys.contains(column.getText())){
-                try {
-                    throw new Visitor.GroupByException(column.getText());
-                } catch (Visitor.GroupByException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
+
 
         //if there isn't join
         //do final shuffled files
@@ -136,4 +162,8 @@ public class Listener extends HplsqlBaseListener {
             }
         }
     }
+
+
+
+
 }
