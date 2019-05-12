@@ -28,7 +28,6 @@ public class FlatProcess {
         shuffledFileMap.forEach((e, s) -> {
             outFileMap.put(e, rowFunction.flat(s));
         });
-
         writeShuffledMap(outFileBuffer, outFileMap);
 
     }
