@@ -42,9 +42,9 @@ public class Scope {
                     break;
             }
         }
-        if (!Data_Type.isImperative(DT))
+        if (!Data_Type.isImperative(DT)) {
             this.table.put(varName, new Table(DT));
-
+        }
     }
 
     /**
