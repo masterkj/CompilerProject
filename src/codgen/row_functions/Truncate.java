@@ -23,7 +23,7 @@ public class Truncate implements RowFunction {
 
             else if (degree > 0)
                 if (e.contains("."))
-                    result.add(e.substring(0, e.indexOf(".") + (int) degree + 1));
+                    result.add(e.substring(0, e.indexOf(".") +  degree + 1));
                 else
                     result.add(e);
             else {
@@ -33,7 +33,6 @@ public class Truncate implements RowFunction {
                 else
                     res = e;
                 char[] temp = res.toCharArray();
-                int index = res.length();
                 int i = degree;
                 while (i < 0) {
                     temp[temp.length - i] = '0';

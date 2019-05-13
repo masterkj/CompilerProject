@@ -19,6 +19,8 @@ import org.json.simple.parser.ParseException;
 
 public class Main {
     public static void main(String[] args) throws IOException, Data_Type.TableDeclaredException, ParseException {
+        String line ="gqwfg,qfgqwg";
+       // System.out.println(line.substring(line.indexOf(','),line.length()));
 
         Data_Type.loadDataTypeFile();
         clearFiles();

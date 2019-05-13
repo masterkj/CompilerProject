@@ -22,18 +22,22 @@ public class Round implements RowFunction {
 
         ArrayList<String> result = new ArrayList<>();
         values.forEach(e -> {
-            double number = Double.parseDouble(e);
+            float number = Float.parseFloat(e);
             if (degree == 0)
                 result.add(String.valueOf(Math.round(number)));
-            else if (degree > 0)
-                result.add(String.valueOf((Math.round((number * Math.pow(10, degree)) / Math.pow(10, degree)))));
-            else {
+            else if (degree > 0) {
+              /*  System.out.println("number : "+ number );
+                System.out.println("\tmult : "+number*Math.pow(10.0,degree));
+                System.out.println("\tround: "+Math.round(number*Math.pow(10.0,degree)));
+                System.out.println("\tdive : "+Math.round((number * Math.pow(10.0, degree)) / Math.pow(10.0, degree)));*/
+                result.add(String.valueOf(Math.round((number * Math.pow(10.0, degree)) / (float) Math.pow(10.0, degree))));
+            }else {
                 String fraction=String.valueOf(fractionalPart(number));
-                int num = (int) (number/Math.pow(10,degree));
+                int num = (int) (number/Math.pow(10.0,degree));
                 char up = fraction.charAt(fraction.indexOf(".")+1);
                 if(((int)up)>=5)
                     num++;
-                num*=Math.pow(10,degree);
+                num*=Math.pow(10.0,degree);
                 result.add(String.valueOf(num));
             }
         });
@@ -43,7 +47,6 @@ public class Round implements RowFunction {
 
 
     public double fractionalPart(double number) {
-
         int decimal = (int) number;
         double fractional = (number - decimal) * Math.pow(10, degree);
         int decimal2 = (int) fractional;

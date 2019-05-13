@@ -4,6 +4,7 @@ import Data_Type.Variable_form;
 import Hplsql.HplsqlBaseVisitor;
 import Hplsql.HplsqlParser;
 import codgen.FlatProcess;
+import codgen.Reducer;
 import codgen.reducers.AggregationFunction;
 import codgen.Query;
 import codgen.row_functions.RowFunction;
@@ -109,6 +110,11 @@ public class Visitor<T> extends HplsqlBaseVisitor {
         //flat them by the aggregation function
 
         Query.reduce(sourceFilePath, AggregationFunction.choseReducer(ctx.getChild(0).getText()), ctx.getText());
+        try {
+            Reducer.accumulator();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return "";
     }
