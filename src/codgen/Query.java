@@ -13,6 +13,8 @@ public class Query {
 
     public static List<String> Tables = new ArrayList<>();
     public static ArrayList<String> keys = new ArrayList<>();
+    public static ArrayList<String> orders = new ArrayList<>();
+    public static boolean T_DESC = false;
     public static ArrayList<String> values = new ArrayList<>();
     final static String OUTPUT_DELIMITER = ",";
     public static final String TEMP_PATH = "./tempFiles";

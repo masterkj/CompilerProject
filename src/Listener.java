@@ -37,25 +37,25 @@ public class Listener extends HplsqlBaseListener {
         String table1 = ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().table_name().ident().getText();
         tables.add(table1);
 
-      //  if(ctx.fullselect_stmt().fullselect_stmt_item().get(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().from_alias_clause().ident()==null)
+        //  if(ctx.fullselect_stmt().fullselect_stmt_item().get(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().from_alias_clause().ident()==null)
 
-            try {
-                String alias = ctx.fullselect_stmt().fullselect_stmt_item().get(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().from_alias_clause().ident().getText();
+        try {
+            String alias = ctx.fullselect_stmt().fullselect_stmt_item().get(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().from_alias_clause().ident().getText();
 
-                if (alias != null) {
-                    try {
-                        Symbol_table.addVar(alias, table1);
-                    } catch (Scope.VarAlreadyDeclaredException e) {
-                        e.printStackTrace();
-                    } catch (Data_Type.DataTypeNotFoundException e) {
-                        e.printStackTrace();
-                    }
+            if (alias != null) {
+                try {
+                    Symbol_table.addVar(alias, table1);
+                } catch (Scope.VarAlreadyDeclaredException e) {
+                    e.printStackTrace();
+                } catch (Data_Type.DataTypeNotFoundException e) {
+                    e.printStackTrace();
                 }
-            }catch (NullPointerException e){
-
             }
+        } catch (NullPointerException e) {
 
-        ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().from_clause().from_join_clause().forEach(e->{
+        }
+
+        ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().from_clause().from_join_clause().forEach(e -> {
             tables.add(e.from_table_clause().from_table_name_clause().table_name().ident().getText());
         });
 
@@ -72,26 +72,40 @@ public class Listener extends HplsqlBaseListener {
 //        ArrayList<String>groupbyArgs=new ArrayList<>();
 
         //add keys
-        if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().group_by_clause() != null){
-            ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().group_by_clause().expr().forEach(e->{
-                if(e.expr_agg_window_func()!=null){
+        if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().group_by_clause() != null) {
+            ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().group_by_clause().expr().forEach(e -> {
+                if (e.expr_agg_window_func() != null) {
                     try {
                         throw new Visitor.GroupByAggriException();
                     } catch (Visitor.GroupByAggriException e1) {
                         e1.printStackTrace();
                     }
                 }
-                if(e.expr_atom().ident()!=null)
-                Query.keys.add(e.expr_atom().ident().getText());
-//                groupbyArgs.add(e.expr_atom().ident().getText());
+                if (e.expr_func() != null)
+                    try {
+                        if (e.expr_func().expr_func_params().func_param(0).ident().non_reserved_words() != null) {
+                            Query.keys.add(e.expr_func().expr_func_params().func_param(0).ident().getChild(2).getText());
+                        }
+                    } catch (NullPointerException e1) {
+                        Query.keys.add(e.expr_func().expr_func_params().func_param(0).ident().getText());
+                    }
+                try {
+                    if (e.expr_atom().ident().non_reserved_words() != null) {
+                        Query.keys.add(e.expr_atom().ident().getChild(2).getText());
+                    }
+                } catch (NullPointerException e1) {
+                    try {
+                        if (e.expr_atom().ident() != null)
+                            Query.keys.add(e.expr_atom().ident().getText());
+                    } catch (NullPointerException e2) {
+                    }
+                }
             });
-
-
-            ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().select_list().select_list_item().forEach(e->{
+            ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().select_list().select_list_item().forEach(e -> {
                 Query.addValue(getValue(e));
-                HplsqlParser.Expr_atomContext column ;
-                if((column =e.expr().expr_atom())!=null)
-                    if(!Query.keys.contains(column.getText())){
+                HplsqlParser.Expr_atomContext column;
+                if ((column = e.expr().expr_atom()) != null)
+                    if (!Query.keys.contains(column.getText())) {
                         try {
                             throw new Visitor.GroupByException(column.getText());
                         } catch (Visitor.GroupByException e1) {
@@ -99,22 +113,57 @@ public class Listener extends HplsqlBaseListener {
                         }
                     }
             });
-
-        }
-        else
+        } else
             Query.keys.add(Query.Tables.get(0));
-
+        if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().order_by_clause() != null) {
+            if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().order_by_clause().T_DESC() != null)
+                Query.T_DESC = true;
+            ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().order_by_clause().expr().forEach(e -> {
+                if (e.expr_func() != null)
+                    try {
+                        if (e.expr_func().expr_func_params().func_param(0).ident().non_reserved_words() != null) {
+                            Query.orders.add(e.expr_func().expr_func_params().func_param(0).ident().getChild(2).getText());
+                        }
+                    } catch (NullPointerException e1) {
+                        Query.orders.add(e.expr_func().expr_func_params().func_param(0).ident().getText());
+                    }
+                if (e.expr_agg_window_func() != null)
+                    try {
+                        if (e.expr_agg_window_func().agg_param().expr().expr_func() != null)
+                            try {
+                                if (e.expr_agg_window_func().agg_param().expr().expr_func().expr_func_params().func_param(0).ident().non_reserved_words() != null)
+                                    Query.orders.add(e.expr_agg_window_func().agg_param().expr().expr_func().expr_func_params().func_param(0).ident().getChild(2).getText());
+                            } catch (NullPointerException e1) {
+                                Query.orders.add(e.expr_agg_window_func().agg_param().expr().expr_func().expr_func_params().func_param(1).ident().getText());
+                            }
+                        else
+                            Query.orders.add(e.expr_agg_window_func().agg_param().expr().expr_atom().ident().getText());
+                    } catch (NullPointerException e1) {
+                    }
+                try {
+                    if (e.expr_atom().ident().non_reserved_words() != null) {
+                        Query.orders.add(e.expr_atom().ident().getChild(2).getText());
+                    }
+                } catch (NullPointerException e1) {
+                }
+                try {
+                    if (e.expr_atom().ident() != null)
+                        Query.orders.add(e.expr_atom().ident().getText());
+                } catch (NullPointerException e2) {
+                }
+            });
+        }
         //add values for the shuffled map
 
 
         //if there isn't join
         //do final shuffled files
-        if(Query.Tables.size() == 1)
-        try {
-            Query.prepareShuffledFiles();
-        } catch (Query.AttributeWithoutTableException | IOException e) {
-            e.printStackTrace();
-        }
+        if (Query.Tables.size() == 1)
+            try {
+                Query.prepareShuffledFiles();
+            } catch (Query.AttributeWithoutTableException | IOException e) {
+                e.printStackTrace();
+            }
 
         else {
             //get the whole tables files
@@ -132,11 +181,11 @@ public class Listener extends HplsqlBaseListener {
 
     private String getValue(HplsqlParser.Select_list_itemContext e) {
         HplsqlParser.Expr_agg_window_funcContext agg_function;
-        if((agg_function = e.expr().expr_agg_window_func()) != null){
-            if(agg_function.agg_param().expr().expr_atom()!= null)
-                return  agg_function.agg_param().expr().expr_atom().ident().getText();
+        if ((agg_function = e.expr().expr_agg_window_func()) != null) {
+            if (agg_function.agg_param().expr().expr_atom() != null)
+                return agg_function.agg_param().expr().expr_atom().ident().getText();
             HplsqlParser.Expr_funcContext row_func;
-            if((row_func = agg_function.agg_param().expr().expr_func())!= null){
+            if ((row_func = agg_function.agg_param().expr().expr_func()) != null) {
                 return getValue(row_func);
             }
         }
@@ -145,7 +194,7 @@ public class Listener extends HplsqlBaseListener {
 
     private String getValue(HplsqlParser.Expr_funcContext row_func) {
         HplsqlParser.IdentContext value;
-        if((value =  row_func.expr_func_params().func_param(0).ident())!=null)
+        if ((value = row_func.expr_func_params().func_param(0).ident()) != null)
             return value.getText();
         return getValue(row_func.expr_func_params().func_param(0).expr().expr_func());
     }
@@ -162,8 +211,6 @@ public class Listener extends HplsqlBaseListener {
             }
         }
     }
-
-
 
 
 }

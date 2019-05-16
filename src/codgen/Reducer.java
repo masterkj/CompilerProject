@@ -144,7 +144,7 @@ public class Reducer {
             writer.append(line);
             first = false;
         } else {
-            line = line.substring(line.indexOf(','));
+            line = line.substring(line.indexOf(","));
             writer.append(line);
         }
         return first;
