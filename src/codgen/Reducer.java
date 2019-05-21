@@ -1,5 +1,6 @@
 package codgen;
 
+import Data_Type.Data_Type;
 import codgen.reducers.AggregationFunction;
 
 import java.io.*;
@@ -7,10 +8,11 @@ import java.util.*;
 
 import static codgen.Mapper.createDire;
 import static codgen.Query.OUTPUT_DELIMITER;
-import static codgen.Query.RESULT_FILE;
+import static codgen.Query.REDUCE_PATH;
 import static codgen.Query.TEMP_PATH;
 
 public class Reducer {
+
 
     /**
      * read the shuffled file,
@@ -21,7 +23,7 @@ public class Reducer {
 
 
         //create the Reduces dir
-        String reducePath = TEMP_PATH + "/Reduces";
+        String reducePath = TEMP_PATH + REDUCE_PATH;
         createDire(reducePath);
 
         //create buffered writer for the reduceFile
@@ -63,51 +65,15 @@ public class Reducer {
         bufferedWriter.close();
     }
 
-    static void accumulate(ArrayList<String> finalFiles) throws IOException {
-        FileWriter finalFile = new FileWriter(TEMP_PATH + "/" + RESULT_FILE);
-        BufferedWriter finalFileBufferWriter = new BufferedWriter(finalFile);
-        List<BufferedReader> bufferedReaders = new ArrayList<>();
-        List<String> fileHeader = new ArrayList<>();
-        List<String> values = new ArrayList<>();
-        finalFiles.forEach(e -> {
-            try {
-                bufferedReaders.add(new BufferedReader(new FileReader(TEMP_PATH + "/" + e)));
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            }
-        });
-
-
-        boolean endReached = false;
-        while (!endReached) {
-            for (int i = 0; i < bufferedReaders.size(); i++) {
-                String line;
-                if ((line = bufferedReaders.get(i).readLine()) == null) {
-                    endReached = true;
-                    break;
-                }
-
-                if (i == bufferedReaders.size() - 1)
-                    finalFileBufferWriter.append(cutValue(line));
-                else
-                    finalFileBufferWriter.append(cutValue(line)).append(OUTPUT_DELIMITER);
-            }
-            finalFileBufferWriter.append("\n");
-
-        }
-        finalFileBufferWriter.flush();
-
-    }
-
     private static String cutValue(String line) {
         String[] splitLine = line.split(OUTPUT_DELIMITER);
         return splitLine[1];
     }
 
     public static void accumulator() throws IOException {
-        String reducePath = TEMP_PATH + "/Reduces";
+        String reducePath = TEMP_PATH + REDUCE_PATH;
         final File ReducesDirectory = new File(reducePath);
-        String accPath = reducePath + "/Accumulator";
+        String accPath = reducePath + "/Accumulator.csv";
         BufferedWriter writer = new BufferedWriter(new FileWriter(accPath));
 
         BufferedReader[] readers = new BufferedReader[ReducesDirectory.listFiles().length-1];
@@ -117,7 +83,7 @@ public class Reducer {
     static void writelines(File ReducesDirectory,BufferedReader[] readers,BufferedWriter writer) throws IOException {
         int i = 0;
         for (final File fileEntry : ReducesDirectory.listFiles()){
-            if (!fileEntry.getName().equals("Accumulator")){
+            if (!fileEntry.getName().equals("Accumulator.csv")){
             readers[i] = new BufferedReader(new FileReader(fileEntry));
             i++;
         }}
@@ -138,6 +104,7 @@ public class Reducer {
         writer.flush();
         writer.close();
     }
+
 
     static boolean readline(String line,BufferedWriter writer,boolean first) throws IOException {
         if (first) {

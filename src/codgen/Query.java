@@ -18,8 +18,8 @@ public class Query {
     public static ArrayList<String> values = new ArrayList<>();
     final static String OUTPUT_DELIMITER = ",";
     public static final String TEMP_PATH = "./tempFiles";
-    static final String RESULT_FILE = "RESULT.csv";
     public static final String OUTPUT_FLAT_PATH = "./tempFiles/flat";
+    public static final String REDUCE_PATH = "/Reduces";
     public static boolean shufflePhaseEnded = false;
 
 

@@ -101,6 +101,8 @@ public class Listener extends HplsqlBaseListener {
                     }
                 }
             });
+
+            //add values for the shuffled map
             ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().select_list().select_list_item().forEach(e -> {
                 Query.addValue(getValue(e));
                 HplsqlParser.Expr_atomContext column;
@@ -115,6 +117,8 @@ public class Listener extends HplsqlBaseListener {
             });
         } else
             Query.keys.add(Query.Tables.get(0));
+
+        // order by
         if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().order_by_clause() != null) {
             if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().order_by_clause().T_DESC() != null)
                 Query.T_DESC = true;
@@ -153,7 +157,7 @@ public class Listener extends HplsqlBaseListener {
                 }
             });
         }
-        //add values for the shuffled map
+
 
 
         //if there isn't join
