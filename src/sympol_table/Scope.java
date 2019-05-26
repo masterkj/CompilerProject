@@ -106,8 +106,16 @@ public class Scope {
         else return this.getParentScope().getImperativeVar(varName);
     }
 
+    @Override
+    public String toString() {
 
-    static class VarNotExistedException extends Exception {
+        StringBuilder s = new StringBuilder();
+        this.table.forEach((k,v) ->
+                s.append(k).append(" : ").append(v.getDataType()).append("\n"));
+        return s.toString();
+    }
+
+    public static class VarNotExistedException extends Exception {
         VarNotExistedException(String varName) {
             super(varName + " not existed ! ");
         }
@@ -119,7 +127,7 @@ public class Scope {
         }
     }
 
-    static class NotTableVarException extends Exception {
+    public static class NotTableVarException extends Exception {
         NotTableVarException(String varName) {
             super(varName + " isn't table");
         }

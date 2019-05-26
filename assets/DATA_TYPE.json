@@ -64,7 +64,7 @@
       "isImperative": false,
       "attributes": [
         {
-          "name": "name",
+          "name": "department_name",
           "type": "STRING"
         },
         {
@@ -82,15 +82,15 @@
       "isImperative": false,
       "attributes": [
         {
-          "name": "age",
+          "name": "employee_age",
           "type": "INT"
         },
         {
-          "name": "salary",
+          "name": "employee_salary",
           "type": "BIGINT"
         },
         {
-          "name": "name",
+          "name": "employee_name",
           "type": "STRING"
         },
         {

@@ -5,6 +5,7 @@ import Data_Type.Data_Type;
 import java.io.*;
 import java.util.*;
 
+import static codgen.Files.getCol;
 import static codgen.Query.OUTPUT_DELIMITER;
 import static codgen.Query.TEMP_PATH;
 
@@ -12,7 +13,6 @@ class Mapper {
 
     static void map(ArrayList<String> keys, String colName, String table) throws IOException {
         String HDFSPath = Data_Type.getHDFSPath(table);
-        String inputDelimiter = Data_Type.getDelimiter(table);
         String mapPath = TEMP_PATH + "/" + colName + "/" + "maps";
         createDire(mapPath);
 
@@ -28,6 +28,7 @@ class Mapper {
 
             //read the headLine
             String splitRegex = "["+Data_Type.getDelimiter(table)+"]";
+            String delimiter = Data_Type.getDelimiter(table);
             String[] header = line.split(splitRegex);
 
 
@@ -64,23 +65,23 @@ class Mapper {
             //while the reader don't reach the end of the file
             while ((line = br.readLine()) != null) {
 
-                String[] row = line.split(splitRegex);
+//                String[] row = line.split(splitRegex);
 
                 //if the keys is a col (there is a group by)
                 if (keys.size() >= 1 && !keys.get(0).equals(table)) {
                     StringBuilder key = new StringBuilder();
                     for (int index : keyIndex) {
                         if (key.toString().equals(""))
-                            key.append(row[index]);
+                            key.append(getCol(line, index,delimiter));
                         else
-                            key.append("@").append(row[index]);
+                            key.append("@").append(getCol(line, index,delimiter));
                     }
 
-                    bufferedWriter.append(key).append(OUTPUT_DELIMITER).append(row[colIndex]).append("\n");
+                    bufferedWriter.append(key).append(OUTPUT_DELIMITER).append(getCol(line, colIndex,delimiter)).append("\n");
 
                     //the keys is table so there isn't a group by
                 } else
-                    bufferedWriter.append(table).append(OUTPUT_DELIMITER).append(row[colIndex]).append("\n");
+                    bufferedWriter.append(table).append(OUTPUT_DELIMITER).append(getCol(line, colIndex,delimiter)).append("\n");
             }
             bufferedWriter.flush();
 
@@ -109,18 +110,18 @@ class Mapper {
             //while the reader don't reach the end of the file
             while ((line = bufferedReader.readLine()) != null) {
                 //row now is about tow columns; the keys is row[0] and the value is row[1]
-                String[] row = line.split(OUTPUT_DELIMITER);
+//                String[] row = line.split(OUTPUT_DELIMITER);
 
                 //if the keys isn't contained in the hashMap
-                if (!hashMap.containsKey(row[0])) {
+                if (!hashMap.containsKey(getCol(line,0,OUTPUT_DELIMITER))) {
                     ArrayList<String> values = new ArrayList<>();
-                    values.add(row[1]);
+                    values.add(getCol(line,1,OUTPUT_DELIMITER));
 
-                    hashMap.put(row[0], values);
+                    hashMap.put(getCol(line,0,OUTPUT_DELIMITER), values);
 
                 } else
                     //the keys is existed so we will add there
-                    hashMap.get(row[0]).add(row[1]);
+                    hashMap.get(getCol(line,0,OUTPUT_DELIMITER)).add(getCol(line,1,OUTPUT_DELIMITER));
             }
             bufferedReader.close();
 

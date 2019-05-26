@@ -1,6 +1,7 @@
 import Data_Type.Data_Type;
 import Data_Type.Variable_form;
-import Hplsql.*;
+import Hplsql.HplsqlBaseListener;
+import Hplsql.HplsqlParser;
 import codgen.Query;
 import org.json.simple.parser.ParseException;
 import sympol_table.Scope;
@@ -8,7 +9,9 @@ import sympol_table.Symbol_table;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
+
+import static codgen.Query.JOIN_PATH;
+import static codgen.Query.OUTPUT_DELIMITER;
 
 public class Listener extends HplsqlBaseListener {
     @Override
@@ -27,49 +30,47 @@ public class Listener extends HplsqlBaseListener {
 
     @Override
     public void enterSelect_stmt(HplsqlParser.Select_stmtContext ctx) {
-        //FIXME: malty tables
-
-        //prepare the query (tables,keys,values)
-
 
         //add tables
-        ArrayList<String> tables = new ArrayList<>();
-        String table1 = ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().table_name().ident().getText();
-        tables.add(table1);
+        Query.fromTable = ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().table_name().ident().getText();
 
-        //  if(ctx.fullselect_stmt().fullselect_stmt_item().get(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().from_alias_clause().ident()==null)
-
-        try {
-            String alias = ctx.fullselect_stmt().fullselect_stmt_item().get(0).subselect_stmt().from_clause().from_table_clause().from_table_name_clause().from_alias_clause().ident().getText();
-
-            if (alias != null) {
-                try {
-                    Symbol_table.addVar(alias, table1);
-                } catch (Scope.VarAlreadyDeclaredException e) {
-                    e.printStackTrace();
-                } catch (Data_Type.DataTypeNotFoundException e) {
-                    e.printStackTrace();
-                }
+        //CHECK: is it a DT
+        if (!(Data_Type.isDT(Query.fromTable)))
+            try {
+                throw new Data_Type.DataTypeNotFoundException(Query.fromTable);
+            } catch (Data_Type.DataTypeNotFoundException e) {
+                e.printStackTrace();
             }
-        } catch (NullPointerException e) {
 
-        }
+        HplsqlParser.From_join_clauseContext joinTable;
+        if ((joinTable = ctx.fullselect_stmt().fullselect_stmt_item().get(0).subselect_stmt().from_clause().from_join_clause(0)) != null) {
+            Query.joinTable = joinTable.from_table_clause().from_table_name_clause().table_name().ident().getText();
 
-        ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().from_clause().from_join_clause().forEach(e -> {
-            tables.add(e.from_table_clause().from_table_name_clause().table_name().ident().getText());
-        });
-
-        for (String table : tables) {
-            if (!Data_Type.isDT(table))
+            if (!(Data_Type.isDT(Query.joinTable)))
                 try {
-                    throw new Data_Type.DataTypeNotFoundException(table);
+                    throw new Data_Type.DataTypeNotFoundException(Query.joinTable);
                 } catch (Data_Type.DataTypeNotFoundException e) {
                     e.printStackTrace();
                 }
-        }
-        Query.Tables.addAll(tables);
 
-//        ArrayList<String>groupbyArgs=new ArrayList<>();
+            Query.isJoin = true;
+        }
+
+        //the boolean var {{end shufflePhase}} will be false
+        //so there will not do any map reduce in this visit
+        new Visitor().visit(ctx);
+
+        // add join result table temporary to the globalArray
+        try {
+            Query.joinResultTable = Query.fromTable + "_" + Query.joinTable;
+            Variable_form variable_form = new Variable_form(null);
+            variable_form.setHDFSPath(Query.TEMP_PATH + JOIN_PATH);
+            variable_form.setDelimiter(OUTPUT_DELIMITER);
+            Data_Type.set_DT(Query.joinResultTable, variable_form);
+        } catch (Data_Type.TableDeclaredException | FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
 
         //add keys
         if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().group_by_clause() != null) {
@@ -96,27 +97,37 @@ public class Listener extends HplsqlBaseListener {
                 } catch (NullPointerException e1) {
                     try {
                         if (e.expr_atom().ident() != null)
-                            Query.keys.add(e.expr_atom().ident().getText());
+                            Query.keys.add(getAttributeName(e));
                     } catch (NullPointerException e2) {
                     }
                 }
             });
 
-            //add values for the shuffled map
+            //add values
             ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().select_list().select_list_item().forEach(e -> {
                 Query.addValue(getValue(e));
                 HplsqlParser.Expr_atomContext column;
-                if ((column = e.expr().expr_atom()) != null)
-                    if (!Query.keys.contains(column.getText())) {
-                        try {
-                            throw new Visitor.GroupByException(column.getText());
-                        } catch (Visitor.GroupByException e1) {
-                            e1.printStackTrace();
+                if ((column = e.expr().expr_atom()) != null) {
+                    if (!Query.isJoin) {
+                        if (!Query.keys.contains(column.getText())) {
+                            try {
+                                throw new Visitor.GroupByException(column.getText());
+                            } catch (Visitor.GroupByException e1) {
+                                e1.printStackTrace();
+                            }
                         }
+                    } else {
+                        if (!Query.keys.contains(column.ident().getChild(2).getText()))
+                            try {
+                                throw new Visitor.GroupByException(column.getText());
+                            } catch (Visitor.GroupByException e1) {
+                                e1.printStackTrace();
+                            }
                     }
+                }
             });
         } else
-            Query.keys.add(Query.Tables.get(0));
+            Query.keys.add(Query.fromTable);
 
         // order by
         if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().order_by_clause() != null) {
@@ -159,39 +170,48 @@ public class Listener extends HplsqlBaseListener {
         }
 
 
-
-        //if there isn't join
-        //do final shuffled files
-        if (Query.Tables.size() == 1)
-            try {
-                Query.prepareShuffledFiles();
-            } catch (Query.AttributeWithoutTableException | IOException e) {
-                e.printStackTrace();
-            }
-
-        else {
-            //get the whole tables files
-            //merge it in one file
+        try {
+            Query.prepareShuffledFiles();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
 
+        //to reduce phase
         new Visitor().visit(ctx);
+    }
 
-//
-//        if(Data_Type.checkIfItAttributes(data_type,attributeNames)) {
-//            ReadCSVData.read(attributeNames,Data_Type.getHDFSPath(data_type), Data_Type.getDelimiter(data_type));
-//        }
+    private String getAttributeName(HplsqlParser.ExprContext e) {
+        if (Query.isJoin)
+            return e.expr_atom().ident().getChild(2).getText();
+        return e.expr_atom().ident().getText();
     }
 
     private String getValue(HplsqlParser.Select_list_itemContext e) {
         HplsqlParser.Expr_agg_window_funcContext agg_function;
+        // if it's not an aggregation function -> ignore
         if ((agg_function = e.expr().expr_agg_window_func()) != null) {
+            //if agg don't have row function
             if (agg_function.agg_param().expr().expr_atom() != null)
-                return agg_function.agg_param().expr().expr_atom().ident().getText();
+                if (Query.isJoin)
+                    try {
+                        String value = agg_function.agg_param().expr().expr_atom().ident().getChild(2).getText();
+                        String tableVar = agg_function.agg_param().expr().expr_atom().ident().getChild(0).getText();
+
+                        String tableName = Symbol_table.getTable(tableVar).getTableName();
+                        if (Data_Type.isAttribute(tableName, value))
+                            return value;
+                    } catch (Scope.NotTableVarException | Scope.VarNotExistedException | Data_Type.DataTypeNotFoundException e1) {
+                        e1.printStackTrace();
+                    }
+                else
+                    return agg_function.agg_param().expr().expr_atom().ident().getText();
+
             HplsqlParser.Expr_funcContext row_func;
-            if ((row_func = agg_function.agg_param().expr().expr_func()) != null) {
+            //if agg have row function
+            if ((row_func = agg_function.agg_param().expr().expr_func()) != null)
                 return getValue(row_func);
-            }
+
         }
         return null;
     }
@@ -199,7 +219,21 @@ public class Listener extends HplsqlBaseListener {
     private String getValue(HplsqlParser.Expr_funcContext row_func) {
         HplsqlParser.IdentContext value;
         if ((value = row_func.expr_func_params().func_param(0).ident()) != null)
-            return value.getText();
+            if (!Query.isJoin)
+                return value.getText();
+            else {
+                try {
+                    String symbol_value = value.getChild(2).getText();
+                    String symbol_tableName = value.getChild(0).getText();
+
+                    String tableName = Symbol_table.getTable(symbol_tableName).getTableName();
+                    if (Data_Type.isAttribute(tableName, symbol_value))
+                        return symbol_value;
+                } catch (Scope.NotTableVarException | Scope.VarNotExistedException | Data_Type.DataTypeNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
         return getValue(row_func.expr_func_params().func_param(0).expr().expr_func());
     }
 

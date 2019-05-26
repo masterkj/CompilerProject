@@ -4,21 +4,22 @@ import Data_Type.Variable_form;
 import Hplsql.HplsqlBaseVisitor;
 import Hplsql.HplsqlParser;
 import codgen.FlatProcess;
+import codgen.Join;
 import codgen.Reducer;
 import codgen.reducers.AggregationFunction;
 import codgen.Query;
 import codgen.row_functions.RowFunction;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import sympol_table.Scope;
 import sympol_table.Symbol_table;
 
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static codgen.Query.OUTPUT_FLAT_PATH;
-import static codgen.Query.TEMP_PATH;
+import static codgen.Query.*;
 
 public class Visitor<T> extends HplsqlBaseVisitor {
     @Override
@@ -66,18 +67,73 @@ public class Visitor<T> extends HplsqlBaseVisitor {
 
     @Override
     public String visitSelect_stmt(HplsqlParser.Select_stmtContext ctx) {
+//        Symbol_table.initNewScobe();
         visit(ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt());
+//        Symbol_table.exitFromScobe();
         return "";
     }
 
     @Override
     public String visitSubselect_stmt(HplsqlParser.Subselect_stmtContext ctx) {
 
+        visit(ctx.from_clause());
         visit(ctx.select_list());
         Query.accumulateReducers();
         return "";
     }
 
+    @Override
+    public Object visitFrom_clause(HplsqlParser.From_clauseContext ctx) {
+        if(Query.endJoinPhase)
+            return null;
+
+        String state;
+        AtomicReference<String> fromTableAttribute = new AtomicReference<>("");
+        AtomicReference<String> joinTableAttribute = new AtomicReference<>("");
+
+        HplsqlParser.From_alias_clauseContext alias;
+
+        //from-table alias declare
+
+        String fromTable = ctx.from_table_clause().from_table_name_clause().table_name().ident().getText();
+        if ((alias = ctx.from_table_clause().from_table_name_clause().from_alias_clause()) != null)
+            try {
+                Symbol_table.addVar(alias.getText(), fromTable);
+            } catch (Scope.VarAlreadyDeclaredException | Data_Type.DataTypeNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        //isJoin alias declare
+        if (Query.isJoin) {
+            if ((alias = ctx.from_join_clause(0).from_table_clause().from_table_name_clause().from_alias_clause()) != null) {
+                try {
+                    Symbol_table.addVar(alias.getText(), joinTable);
+                    getJoinAttribute(ctx.from_join_clause(0).bool_expr().bool_expr_atom().bool_expr_binary().bool_expr_binary_operator().ident(), fromTableAttribute, joinTableAttribute);
+                    getJoinAttribute(ctx.from_join_clause(0).bool_expr().bool_expr_atom().bool_expr_binary().bool_expr_binary_operator().expr().expr_atom().ident(), fromTableAttribute, joinTableAttribute);
+                } catch (Scope.VarAlreadyDeclaredException | Data_Type.DataTypeNotFoundException | Scope.NotTableVarException | Scope.VarNotExistedException e) {
+                    e.printStackTrace();
+                }
+                state = ctx.from_join_clause(0).from_join_type_clause().getText();
+
+                if (joinTableAttribute.get().equals("") && fromTableAttribute.get().equals("")) {
+                    try {
+                        throw new Exception("the isJoin condition is wrong");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    Join.join(Query.fromTable, Query.joinTable, fromTableAttribute.get(), joinTableAttribute.get(), state);
+                    Query.endJoinPhase = true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return null;
+    }
 
     @Override
     public String visitSelect_list(HplsqlParser.Select_listContext ctx) {
@@ -89,18 +145,19 @@ public class Visitor<T> extends HplsqlBaseVisitor {
     @Override
     public String visitSelect_list_item(HplsqlParser.Select_list_itemContext ctx) {
 
-        if (ctx.expr().expr_agg_window_func() != null)
-            visit(ctx.expr().expr_agg_window_func());
+        if (Query.shufflePhaseEnded)
+            if (ctx.expr().expr_agg_window_func() != null)
+                visit(ctx.expr().expr_agg_window_func());
 
         return "";
     }
 
     @Override
     public String visitExpr_agg_window_func(HplsqlParser.Expr_agg_window_funcContext ctx) {
-        //TODO: sum(salary) s
 
         //visit the param if it col or aggregation function so.. , and get the fileEntries
         String colName = (String) visit(ctx.agg_param());
+
         String sourceFilePath = null;
         if (ctx.agg_param().expr().expr_func() == null)
             sourceFilePath = TEMP_PATH + "/" + colName + "/main.csv";
@@ -154,7 +211,10 @@ public class Visitor<T> extends HplsqlBaseVisitor {
         HplsqlParser.IdentContext colRule;
         HplsqlParser.Expr_funcContext funcRule;
         if ((colRule = ctx.expr_func_params().func_param(0).ident()) != null) {
+            if(!Query.isJoin)
             colName = colRule.getText();
+            else
+                colName = colRule.getChild(2).getText();
 
             if (Query.shufflePhaseEnded)
                 try {
@@ -180,101 +240,108 @@ public class Visitor<T> extends HplsqlBaseVisitor {
 
 
     @Override
-    public Object visitInit_expression_cpp_stmt (HplsqlParser.Init_expression_cpp_stmtContext ctx){
+    public Object visitInit_expression_cpp_stmt(HplsqlParser.Init_expression_cpp_stmtContext ctx) {
 
-            String dType = ctx.declear_variable().dtype().getText();
+        String dType = ctx.declear_variable().dtype().getText();
 
-            if (!Data_Type.isDT(dType)) {
-                try {
-                    throw new Data_Type.DataTypeNotFoundException(dType);
-                } catch (Data_Type.DataTypeNotFoundException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                String varName = ctx.declear_variable().ident().getText();
-                try {
-                    Symbol_table.addVar(varName, dType);
-                } catch (Scope.VarAlreadyDeclaredException e) {
-                    e.printStackTrace();
-                } catch (Data_Type.DataTypeNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        /**
-         * get file entries for col that contained map and shuffles without flat
-         */
-        private String getColName (HplsqlParser.ExprContext ctx){
-            String colName = ctx.expr_atom().ident().getText();
-
-            String tableName = colExistedInTable(ctx, Query.Tables);
-
+        if (!Data_Type.isDT(dType)) {
             try {
-                if (tableName == null)
-                    throw new ColumnNotContainedException(colName);
-            } catch (ColumnNotContainedException e) {
+                throw new Data_Type.DataTypeNotFoundException(dType);
+            } catch (Data_Type.DataTypeNotFoundException e) {
                 e.printStackTrace();
             }
-            return colName;
-
-        }
-
-        /**
-         * to find if column existed in any table and
-         * there is no conflict
-         */
-        private String colExistedInTable (HplsqlParser.ExprContext ctx, List < String > tables){
-            boolean status = false;
-            String tableName = null;
-            String colName = ctx.expr_atom().ident().getText();
-
-
-            //check if col existed in table and there is no conflict
-            for (String table : Query.Tables) {
-                if (Data_Type.checkIfItAttributes(table, colName))
-                    if (!status) {
-                        status = true;
-                        tableName = table;
-                    } else
-                        try {
-                            throw new ColumnConflictException(colName);
-                        } catch (ColumnConflictException e) {
-                            e.printStackTrace();
-                        }
-            }
-            return tableName;
-        }
-
-        static class ColumnConflictException extends Exception {
-            ColumnConflictException(String s) {
-                super(s + "is in more than one table");
+        } else {
+            String varName = ctx.declear_variable().ident().getText();
+            try {
+                Symbol_table.addVar(varName, dType);
+            } catch (Scope.VarAlreadyDeclaredException e) {
+                e.printStackTrace();
+            } catch (Data_Type.DataTypeNotFoundException e) {
+                e.printStackTrace();
             }
         }
+        return null;
+    }
 
-        static class ColumnNotContainedException extends Exception {
-            ColumnNotContainedException(String s) {
-                super(s + "is not contained in any table");
+    /**
+     * get the isJoin attribute in ctx Ident -> x.s
+     */
+    private void getJoinAttribute(ParseTree ctx, AtomicReference<String> fromTableAtt, AtomicReference<String> joinTableAtt) throws Scope.NotTableVarException, Scope.VarNotExistedException, Data_Type.DataTypeNotFoundException {
+
+        String tableName = Symbol_table.getTable(ctx.getChild(0).getText()).getTableName();
+
+        String attributeName = ctx.getChild(2).getText();
+        if (Data_Type.isAttribute(tableName, attributeName))
+            if (tableName.equals(Query.fromTable))
+                fromTableAtt.set(attributeName);
+            else
+                joinTableAtt.set(attributeName);
+    }
+
+    /**
+     * get file entries for col that contained map and shuffles without flat
+     */
+    private String getColName(HplsqlParser.ExprContext ctx) {
+        String colName = ctx.expr_atom().ident().getText();
+
+        String tableName = null;
+//        String tableName = colExistedInTable(ctx, Query.Tables);
+        if (Query.isJoin) {
+            String tableVarName = ctx.expr_atom().ident().getChild(0).getText();
+            colName = ctx.expr_atom().ident().getChild(2).getText();
+            try {
+                tableName = Symbol_table.getTable(tableVarName).getTableName();
+            } catch (Scope.NotTableVarException | Scope.VarNotExistedException e) {
+                e.printStackTrace();
+            }
+        } else {
+//            tableName = colExistedInTable(ctx, Query.Tables);
+            try {
+                if (Data_Type.isAttribute(Query.fromTable, colName))
+                    tableName = Query.fromTable;
+            } catch (Data_Type.DataTypeNotFoundException e) {
+                e.printStackTrace();
             }
         }
 
-        static class NestedAggregationFunctionException extends Exception {
-            NestedAggregationFunctionException(String s) {
-                super(s + "is in another aggregation function");
-            }
+        try {
+            if (tableName == null)
+                throw new ColumnNotContainedException(colName);
+        } catch (ColumnNotContainedException e) {
+            e.printStackTrace();
         }
+        return colName;
 
+    }
 
-        static class GroupByException extends Exception {
-            GroupByException(String column) {
-                super(column + " Is Not Found In Group By");
-            }
-        }
-
-        static class GroupByAggriException extends Exception {
-            GroupByAggriException() {
-                super("Group by cannot contain aggrigation function");
-            }
+    static class ColumnConflictException extends Exception {
+        ColumnConflictException(String s) {
+            super(s + "is in more than one table");
         }
     }
+
+    static class ColumnNotContainedException extends Exception {
+        ColumnNotContainedException(String s) {
+            super(s + "is not contained in any table");
+        }
+    }
+
+    static class NestedAggregationFunctionException extends Exception {
+        NestedAggregationFunctionException(String s) {
+            super(s + "is in another aggregation function");
+        }
+    }
+
+
+    static class GroupByException extends Exception {
+        GroupByException(String column) {
+            super(column + " Is Not Found In Group By");
+        }
+    }
+
+    static class GroupByAggriException extends Exception {
+        GroupByAggriException() {
+            super("Group by cannot contain aggrigation function");
+        }
+    }
+}

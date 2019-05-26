@@ -6,7 +6,7 @@ import Data_Type.Data_Type;
 
 public class Symbol_table {
     private static int total_id = 0;
-    private static Scope GLOBAL_SCOPE = new Scope(null, incrementId());
+    public static Scope GLOBAL_SCOPE = new Scope(null, incrementId());
     private static Scope currentScobe = GLOBAL_SCOPE;
 
 
@@ -43,5 +43,6 @@ public class Symbol_table {
     public static void setVarValue(String imperativeVarName, Object value) throws Scope.NotImperativeVarException, Scope.VarNotExistedException {
         getImperativeVar(imperativeVarName).setValue(value);
     }
+
 
 }

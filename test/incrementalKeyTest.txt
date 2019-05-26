@@ -1,1 +1,0 @@
-SELECT age, sum(salary) from testTable
