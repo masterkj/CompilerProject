@@ -9,7 +9,7 @@ public class Standard_Deviation implements AggregationFunction{
     @Override
     public String reduce(ArrayList<String> values) {
 
-        double avg= Double.parseDouble(String.valueOf(new Avg()));
+        double avg= Double.parseDouble(new Avg().reduce(values));
 
         values.forEach(v->{
             sum+=Math.pow(Double.parseDouble(v)-avg,2);

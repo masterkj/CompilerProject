@@ -121,7 +121,7 @@ public class Reducer {
             first = false;
         } else {
             line = line.substring(line.indexOf(","));
-            writer.append(line);
+            writer.append(line).append("\t");
         }
         return first;
     }

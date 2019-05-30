@@ -12,17 +12,19 @@ public class Mode implements AggregationFunction{
     @Override
     public String reduce(ArrayList<String> values) {
 
-        HashMap<String, Double> repeats=new HashMap<>();
+        HashMap<String, Integer> repeats=new HashMap<>();
 
         values.forEach(v->{
             if(repeats.containsKey(v))
                 repeats.put(v,repeats.get(v)+1);
+            else
+                repeats.put(v,1);
         });
 
-        double max=Collections.max(repeats.values());
-        for (Map.Entry<String, Double> entry : repeats.entrySet()) {
+        int max=Collections.max(repeats.values());
+        for (Map.Entry<String, Integer> entry : repeats.entrySet()) {
             String s = entry.getKey();
-            Double d = entry.getValue();
+            int d = entry.getValue();
             if (d == max) {
                 mode = s;
                 break;

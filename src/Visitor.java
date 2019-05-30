@@ -166,11 +166,14 @@ public class Visitor<T> extends HplsqlBaseVisitor {
             sourceFilePath = OUTPUT_FLAT_PATH + "/" + ctx.agg_param().expr().expr_func().getText() + ".csv";
 
         //flat them by the aggregation function
-        if(ctx.getChild(0).getText()=="SUMMARIZE")
-            Summarize.reduce(sourceFilePath,ctx.getText());
-        else
+        if(ctx.getChild(0).getText().equals("SUMMARIZE")) {
+            Summarize.reduce(sourceFilePath, ctx.agg_param().expr().expr_atom().ident().getText());
+            System.out.println("if "+ctx.getChild(0).getText());
+        }else {
+            System.out.println("else "+ctx.getChild(0).getText());
             Query.reduce(sourceFilePath, AggregationFunction.choseReducer(ctx.getChild(0).getText()), ctx.getText());
-        try {
+
+        }try {
             Reducer.accumulator();
         } catch (IOException e) {
             e.printStackTrace();

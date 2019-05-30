@@ -745,6 +745,7 @@ expr_agg_window_func :
      | T_SUM T_OPEN_P expr_func_all_distinct? agg_param T_CLOSE_P expr_func_over_clause?
      | T_VAR T_OPEN_P expr_func_all_distinct? agg_param T_CLOSE_P expr_func_over_clause?
      | T_VARIANCE T_OPEN_P expr_func_all_distinct? agg_param T_CLOSE_P expr_func_over_clause?
+     | T_SUMMARIZE T_OPEN_P expr_func_all_distinct? agg_param T_CLOSE_P
      ;
 
 agg_param: expr;
@@ -1420,6 +1421,7 @@ T_STRING          : S T R I N G ;
 T_SUBDIR          : S U B D I R ;
 T_SUBSTRING       : S U B S T R I N G ;
 T_SUM             : S U M ;
+T_SUMMARIZE       : S U M M A R I Z E;
 T_SUMMARY         : S U M M A R Y ;
 T_SYS_REFCURSOR   : S Y S '_' R E F C U R S O R ;
 T_TABLE           : T A B L E ;
