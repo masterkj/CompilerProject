@@ -1,11 +1,11 @@
 package codgen;
 
-import Data_Type.Data_Type;
 import codgen.reducers.AggregationFunction;
 
 import java.io.*;
 import java.util.*;
 
+import static codgen.Files.getCol;
 import static codgen.Mapper.createDire;
 import static codgen.Query.OUTPUT_DELIMITER;
 import static codgen.Query.REDUCE_PATH;
@@ -31,7 +31,9 @@ public class Reducer {
 
         BufferedReader sourceFile = new BufferedReader(new FileReader(sourceFilePath));
 
-        reducedFile.append(sourceFile.readLine()).append("\n");
+//        reducedFile.append(sourceFile.readLine()).append("\n");
+        // write head line
+        writeReduceHeadLine(sourceFile, reduceFileName, reducedFile);
         String line;
 
         HashMap<String, String> hashMap = new HashMap<>();
@@ -46,6 +48,12 @@ public class Reducer {
         sourceFile.close();
 
         writeFile(hashMap, reducedFile);
+    }
+
+    private static void writeReduceHeadLine(BufferedReader sourceFile, String reduceFileName, BufferedWriter reducedFile) throws IOException {
+        reducedFile.append(getCol(sourceFile.readLine(), 0, OUTPUT_DELIMITER))
+                .append(OUTPUT_DELIMITER).append(reduceFileName)
+                .append("\n");
     }
 
 
@@ -76,26 +84,27 @@ public class Reducer {
         String accPath = reducePath + "/Accumulator.csv";
         BufferedWriter writer = new BufferedWriter(new FileWriter(accPath));
 
-        BufferedReader[] readers = new BufferedReader[ReducesDirectory.listFiles().length-1];
-        writelines(ReducesDirectory,readers,writer);
+        BufferedReader[] readers = new BufferedReader[ReducesDirectory.listFiles().length - 1];
+        writelines(ReducesDirectory, readers, writer);
     }
 
-    static void writelines(File ReducesDirectory,BufferedReader[] readers,BufferedWriter writer) throws IOException {
+    static void writelines(File ReducesDirectory, BufferedReader[] readers, BufferedWriter writer) throws IOException {
         int i = 0;
-        for (final File fileEntry : ReducesDirectory.listFiles()){
-            if (!fileEntry.getName().equals("Accumulator.csv")){
-            readers[i] = new BufferedReader(new FileReader(fileEntry));
-            i++;
-        }}
+        for (final File fileEntry : ReducesDirectory.listFiles()) {
+            if (!fileEntry.getName().equals("Accumulator.csv")) {
+                readers[i] = new BufferedReader(new FileReader(fileEntry));
+                i++;
+            }
+        }
         boolean av = true;
         while (av) {
             boolean first = true;
             for (i = 0; i < readers.length; i++) {
                 String line = readers[i].readLine();
                 if (line != null)
-                    first=readline(line,writer,first);
-                else{
-                    av=false;
+                    first = readline(line, writer, first);
+                else {
+                    av = false;
                     break;
                 }
             }
@@ -106,7 +115,7 @@ public class Reducer {
     }
 
 
-    static boolean readline(String line,BufferedWriter writer,boolean first) throws IOException {
+    static boolean readline(String line, BufferedWriter writer, boolean first) throws IOException {
         if (first) {
             writer.append(line);
             first = false;
