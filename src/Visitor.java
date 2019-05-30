@@ -8,6 +8,7 @@ import codgen.Join;
 import codgen.Reducer;
 import codgen.reducers.AggregationFunction;
 import codgen.Query;
+import codgen.reducers.Summarize;
 import codgen.row_functions.RowFunction;
 
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -165,8 +166,10 @@ public class Visitor<T> extends HplsqlBaseVisitor {
             sourceFilePath = OUTPUT_FLAT_PATH + "/" + ctx.agg_param().expr().expr_func().getText() + ".csv";
 
         //flat them by the aggregation function
-
-        Query.reduce(sourceFilePath, AggregationFunction.choseReducer(ctx.getChild(0).getText()), ctx.getText());
+        if(ctx.getChild(0).getText()=="SUMMARIZE")
+            Summarize.reduce(sourceFilePath,ctx.getText());
+        else
+            Query.reduce(sourceFilePath, AggregationFunction.choseReducer(ctx.getChild(0).getText()), ctx.getText());
         try {
             Reducer.accumulator();
         } catch (IOException e) {

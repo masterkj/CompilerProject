@@ -16,6 +16,16 @@ public interface AggregationFunction {
             return new Max();
         if(aggregationFunctionName.equals("count"))
             return new Count();
+        if(aggregationFunctionName.equals("median"))
+            return new Median();
+        if(aggregationFunctionName.equals("mode"))
+            return new Mode();
+        if(aggregationFunctionName.equals("Q1"))
+            return new Quartile1();
+        if(aggregationFunctionName.equals("Q3"))
+            return new Quartile3();
+        if(aggregationFunctionName.equals("std"))
+            return new Standard_Deviation();
         return null;
     }
 }
