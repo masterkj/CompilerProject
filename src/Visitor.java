@@ -287,6 +287,12 @@ public class Visitor<T> extends HplsqlBaseVisitor {
                     Query.deleteReducer(e.expr_agg_window_func().getText());
                 }
         });
+        try {
+            Query.order();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         return super.visitOrder_by_clause(ctx);
     }
