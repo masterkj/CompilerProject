@@ -11,6 +11,10 @@ import static codgen.Query.*;
 public class Join {
 
     public static void join(String table, String joinTable, String tableAttribute, String joinTableAttribute, String joinStatus) throws IOException {
+        if(Query.EXPLAIN_PLAN) {
+            System.out.println("---------- JOIN phase ----------");
+            System.out.println(joinStatus+" "+table+ " on "+joinTable+ " on attribute: "+tableAttribute);
+        }
         String firstTable = "";
         String secondTable = "";
         String firstTableAttribute = null;

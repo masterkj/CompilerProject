@@ -27,7 +27,7 @@ public interface RowFunction {
         return null;
     }
 
-    public static String getName(RowFunction rowFunction) {
+    static String getName(RowFunction rowFunction) {
         if (rowFunction instanceof Len)
             return "len";
         if (rowFunction instanceof Substr)

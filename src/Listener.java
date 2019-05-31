@@ -177,6 +177,8 @@ public class Listener extends HplsqlBaseListener {
         }
 
 
+        if(Query.EXPLAIN_PLAN) System.out.println("\n"+"---------- REDUCE phase  ----------");
+
         //to reduce phase
         new Visitor().visit(ctx);
     }

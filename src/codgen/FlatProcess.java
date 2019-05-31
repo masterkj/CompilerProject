@@ -11,6 +11,10 @@ import static codgen.Mapper.*;
 public class FlatProcess {
 
     public static void flat(String shuffledFilePath, RowFunction rowFunction, String subName) throws IOException {
+
+        if(Query.EXPLAIN_PLAN)
+            System.out.println("row function ["+RowFunction.getName(rowFunction) + "] "+subName);
+
         String outFileName = RowFunction.getName(rowFunction) + "(" + subName + ")";
         String outFilePath = Query.OUTPUT_FLAT_PATH + "/" + outFileName + ".csv";
 

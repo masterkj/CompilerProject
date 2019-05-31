@@ -22,11 +22,6 @@ public class Data_Type implements Serializable {
 
     }
 
-    public static void set_DT(String DT_name, Attribute_form... args) throws FileNotFoundException {
-        GLOBAL_ARRAY.put(DT_name, new Variable_form(args));
-
-    }
-
     public static boolean isDT(String DT) {
         return GLOBAL_ARRAY.getOrDefault(DT, null) != null;
     }
@@ -162,16 +157,6 @@ public class Data_Type implements Serializable {
         loadDataTypeFile();
     }
 
-    /**
-     * remove a DT unless it's an imperitive
-     */
-    public static void removeDT(String data_type) throws FileNotFoundException {
-
-        GLOBAL_ARRAY.remove(data_type);
-        updateDataTypeFile();
-
-    }
-
     public static void addDataType(String DT, Variable_form variables) throws Data_Type.TableDeclaredException, FileNotFoundException {
         set_DT(DT, variables);
         updateDataTypeFile();
@@ -180,13 +165,6 @@ public class Data_Type implements Serializable {
     public static String printDataType(String DT) {
         return GLOBAL_ARRAY.get(DT).toString();
 
-    }
-
-    public static void printDataTypes() {
-
-        GLOBAL_ARRAY.forEach((e, s) -> {
-            System.out.println(printDataType(e));
-        });
     }
 
     public static boolean isImperative(String DT) {

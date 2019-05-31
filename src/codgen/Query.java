@@ -26,18 +26,23 @@ public class Query {
     public static boolean shufflePhaseEnded = false;
     public static boolean endJoinPhase = false;
 
+    public final static boolean EXPLAIN_PLAN = true;
+
 
     public static void prepareShuffledFiles() throws IOException {
 
-            for (String value : values) {
-                if(!isJoin) {
-                    Mapper.map(keys, value, fromTable);
-                    Mapper.shuffle(value);
-                }else{
-                    Mapper.map(keys, value, joinResultTable);
-                    Mapper.shuffle(value);
-                }
+        if (Query.EXPLAIN_PLAN)
+            System.out.println("\n"+"---------- MAP phase  ----------");
+
+        for (String value : values) {
+            if (!isJoin) {
+                Mapper.map(keys, value, fromTable);
+                Mapper.shuffle(value);
+            } else {
+                Mapper.map(keys, value, joinResultTable);
+                Mapper.shuffle(value);
             }
+        }
         shufflePhaseEnded = true;
     }
 

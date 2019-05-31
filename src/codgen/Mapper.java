@@ -12,6 +12,8 @@ import static codgen.Query.TEMP_PATH;
 class Mapper {
 
     static void map(ArrayList<String> keys, String colName, String table) throws IOException {
+        if (Query.EXPLAIN_PLAN) System.out.println("map on " + colName);
+
         String HDFSPath = Data_Type.getHDFSPath(table);
         String mapPath = TEMP_PATH + "/" + colName + "/" + "maps";
         createDire(mapPath);
@@ -27,7 +29,7 @@ class Mapper {
             line = br.readLine();
 
             //read the headLine
-            String splitRegex = "["+Data_Type.getDelimiter(table)+"]";
+            String splitRegex = "[" + Data_Type.getDelimiter(table) + "]";
             String delimiter = Data_Type.getDelimiter(table);
             String[] header = line.split(splitRegex);
 
@@ -72,16 +74,16 @@ class Mapper {
                     StringBuilder key = new StringBuilder();
                     for (int index : keyIndex) {
                         if (key.toString().equals(""))
-                            key.append(getCol(line, index,delimiter));
+                            key.append(getCol(line, index, delimiter));
                         else
-                            key.append("@").append(getCol(line, index,delimiter));
+                            key.append("@").append(getCol(line, index, delimiter));
                     }
 
-                    bufferedWriter.append(key).append(OUTPUT_DELIMITER).append(getCol(line, colIndex,delimiter)).append("\n");
+                    bufferedWriter.append(key).append(OUTPUT_DELIMITER).append(getCol(line, colIndex, delimiter)).append("\n");
 
                     //the keys is table so there isn't a group by
                 } else
-                    bufferedWriter.append(table).append(OUTPUT_DELIMITER).append(getCol(line, colIndex,delimiter)).append("\n");
+                    bufferedWriter.append(table).append(OUTPUT_DELIMITER).append(getCol(line, colIndex, delimiter)).append("\n");
             }
             bufferedWriter.flush();
 
@@ -90,6 +92,9 @@ class Mapper {
 
 
     static void shuffle(String valueName) throws IOException {
+        if (Query.EXPLAIN_PLAN)
+            System.out.println("shuffle on " + valueName);
+
         HashMap<String, ArrayList<String>> hashMap = new HashMap<>();
         ArrayList<String> fileEntries = new ArrayList<>();
         File maps = new File(TEMP_PATH + "/" + valueName + "/maps");
@@ -113,15 +118,15 @@ class Mapper {
 //                String[] row = line.split(OUTPUT_DELIMITER);
 
                 //if the keys isn't contained in the hashMap
-                if (!hashMap.containsKey(getCol(line,0,OUTPUT_DELIMITER))) {
+                if (!hashMap.containsKey(getCol(line, 0, OUTPUT_DELIMITER))) {
                     ArrayList<String> values = new ArrayList<>();
-                    values.add(getCol(line,1,OUTPUT_DELIMITER));
+                    values.add(getCol(line, 1, OUTPUT_DELIMITER));
 
-                    hashMap.put(getCol(line,0,OUTPUT_DELIMITER), values);
+                    hashMap.put(getCol(line, 0, OUTPUT_DELIMITER), values);
 
                 } else
                     //the keys is existed so we will add there
-                    hashMap.get(getCol(line,0,OUTPUT_DELIMITER)).add(getCol(line,1,OUTPUT_DELIMITER));
+                    hashMap.get(getCol(line, 0, OUTPUT_DELIMITER)).add(getCol(line, 1, OUTPUT_DELIMITER));
             }
             bufferedReader.close();
 
@@ -147,7 +152,7 @@ class Mapper {
         boolean headerGotten = false;
         String fileHeader = null;
         for (File shuffledFile : Objects.requireNonNull(shuffledFilesDir.listFiles())) {
-            if(!headerGotten) {
+            if (!headerGotten) {
                 fileHeader = getHeader(shuffledFile);
                 headerGotten = true;
             }
@@ -189,11 +194,11 @@ class Mapper {
 
 
     private static void shuffleFiles(HashMap<String, ArrayList<String>> finalShuffledFileMap, HashMap<String, ArrayList<String>> currentFileMap) {
-        currentFileMap.forEach((k,v)->{
-            if(finalShuffledFileMap.containsKey(k))
+        currentFileMap.forEach((k, v) -> {
+            if (finalShuffledFileMap.containsKey(k))
                 finalShuffledFileMap.get(k).addAll(v);
             else
-                finalShuffledFileMap.put(k,v);
+                finalShuffledFileMap.put(k, v);
         });
     }
 
@@ -206,9 +211,9 @@ class Mapper {
 
         String line;
         String row[];
-        while((line = bufferedReader.readLine()) !=null){
+        while ((line = bufferedReader.readLine()) != null) {
             row = line.split(OUTPUT_DELIMITER);
-            shuffledMap.put(row[0], new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(row,1,row.length))));
+            shuffledMap.put(row[0], new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(row, 1, row.length))));
         }
         return shuffledMap;
     }

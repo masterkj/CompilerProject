@@ -21,6 +21,8 @@ public class Reducer {
      */
     static void reduce(String sourceFilePath, AggregationFunction aggregationFunction, String reduceFileName) throws IOException {
 
+        if (Query.EXPLAIN_PLAN)
+            System.out.println("reduce " + reduceFileName+"\n");
 
         //create the Reduces dir
         String reducePath = TEMP_PATH + REDUCE_PATH;

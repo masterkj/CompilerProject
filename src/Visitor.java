@@ -168,9 +168,9 @@ public class Visitor<T> extends HplsqlBaseVisitor {
         //flat them by the aggregation function
         if(ctx.getChild(0).getText().equals("SUMMARIZE")) {
             Summarize.reduce(sourceFilePath, ctx.agg_param().expr().expr_atom().ident().getText());
-            System.out.println("if "+ctx.getChild(0).getText());
+//            System.out.println("if "+ctx.getChild(0).getText());
         }else {
-            System.out.println("else "+ctx.getChild(0).getText());
+//            System.out.println("else "+ctx.getChild(0).getText());
             Query.reduce(sourceFilePath, AggregationFunction.choseReducer(ctx.getChild(0).getText()), ctx.getText());
 
         }try {
