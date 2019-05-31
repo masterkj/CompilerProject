@@ -85,7 +85,7 @@ public class Visitor<T> extends HplsqlBaseVisitor {
 
     @Override
     public Object visitFrom_clause(HplsqlParser.From_clauseContext ctx) {
-        if(Query.endJoinPhase)
+        if (Query.endJoinPhase)
             return null;
 
         String state;
@@ -166,14 +166,11 @@ public class Visitor<T> extends HplsqlBaseVisitor {
             sourceFilePath = OUTPUT_FLAT_PATH + "/" + ctx.agg_param().expr().expr_func().getText() + ".csv";
 
         //flat them by the aggregation function
-        if(ctx.getChild(0).getText().equals("SUMMARIZE")) {
+        if (ctx.getChild(0).getText().equals("SUMMARIZE"))
             Summarize.reduce(sourceFilePath, ctx.agg_param().expr().expr_atom().ident().getText());
-//            System.out.println("if "+ctx.getChild(0).getText());
-        }else {
-//            System.out.println("else "+ctx.getChild(0).getText());
+        else
             Query.reduce(sourceFilePath, AggregationFunction.choseReducer(ctx.getChild(0).getText()), ctx.getText());
-
-        }try {
+        try {
             Reducer.accumulator();
         } catch (IOException e) {
             e.printStackTrace();
@@ -217,8 +214,8 @@ public class Visitor<T> extends HplsqlBaseVisitor {
         HplsqlParser.IdentContext colRule;
         HplsqlParser.Expr_funcContext funcRule;
         if ((colRule = ctx.expr_func_params().func_param(0).ident()) != null) {
-            if(!Query.isJoin)
-            colName = colRule.getText();
+            if (!Query.isJoin)
+                colName = colRule.getText();
             else
                 colName = colRule.getChild(2).getText();
 
@@ -267,6 +264,31 @@ public class Visitor<T> extends HplsqlBaseVisitor {
             }
         }
         return null;
+    }
+
+    @Override
+    public Object visitOrder_by_clause(HplsqlParser.Order_by_clauseContext ctx) {
+
+        ctx.expr().forEach(e -> {
+            if (e.expr_agg_window_func() != null)
+                if(Query.reducerFound(e.expr_agg_window_func().getText()))
+                    try {
+                        Query.copyReducer(e.expr_agg_window_func().getText());
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                else{
+                    visit(e.expr_agg_window_func());
+                    try {
+                        Query.copyReducer(e.expr_agg_window_func().getText());
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                    Query.deleteReducer(e.expr_agg_window_func().getText());
+                }
+        });
+
+        return super.visitOrder_by_clause(ctx);
     }
 
     /**
