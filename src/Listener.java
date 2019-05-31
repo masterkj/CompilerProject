@@ -9,6 +9,7 @@ import sympol_table.Symbol_table;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static codgen.Query.JOIN_PATH;
 import static codgen.Query.OUTPUT_DELIMITER;
@@ -133,40 +134,7 @@ public class Listener extends HplsqlBaseListener {
         if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().order_by_clause() != null) {
             if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().order_by_clause().T_DESC() != null)
                 Query.T_DESC = true;
-            ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().order_by_clause().expr().forEach(e -> {
-                if (e.expr_func() != null)
-                    try {
-                        if (e.expr_func().expr_func_params().func_param(0).ident().non_reserved_words() != null) {
-                            Query.orders.add(e.expr_func().expr_func_params().func_param(0).ident().getChild(2).getText());
-                        }
-                    } catch (NullPointerException e1) {
-                        Query.orders.add(e.expr_func().expr_func_params().func_param(0).ident().getText());
-                    }
-                if (e.expr_agg_window_func() != null)
-                    try {
-                        if (e.expr_agg_window_func().agg_param().expr().expr_func() != null)
-                            try {
-                                if (e.expr_agg_window_func().agg_param().expr().expr_func().expr_func_params().func_param(0).ident().non_reserved_words() != null)
-                                    Query.orders.add(e.expr_agg_window_func().agg_param().expr().expr_func().expr_func_params().func_param(0).ident().getChild(2).getText());
-                            } catch (NullPointerException e1) {
-                                Query.orders.add(e.expr_agg_window_func().agg_param().expr().expr_func().expr_func_params().func_param(1).ident().getText());
-                            }
-                        else
-                            Query.orders.add(e.expr_agg_window_func().agg_param().expr().expr_atom().ident().getText());
-                    } catch (NullPointerException e1) {
-                    }
-                try {
-                    if (e.expr_atom().ident().non_reserved_words() != null) {
-                        Query.orders.add(e.expr_atom().ident().getChild(2).getText());
-                    }
-                } catch (NullPointerException e1) {
-                }
-                try {
-                    if (e.expr_atom().ident() != null)
-                        Query.orders.add(e.expr_atom().ident().getText());
-                } catch (NullPointerException e2) {
-                }
-            });
+
         }
 
 
