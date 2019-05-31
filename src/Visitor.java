@@ -3,11 +3,8 @@ import Data_Type.Data_Type;
 import Data_Type.Variable_form;
 import Hplsql.HplsqlBaseVisitor;
 import Hplsql.HplsqlParser;
-import codgen.FlatProcess;
-import codgen.Join;
-import codgen.Reducer;
+import codgen.*;
 import codgen.reducers.AggregationFunction;
-import codgen.Query;
 import codgen.reducers.Summarize;
 import codgen.row_functions.RowFunction;
 
@@ -288,7 +285,7 @@ public class Visitor<T> extends HplsqlBaseVisitor {
                 }
         });
         try {
-            Query.order();
+            OrderBy.order();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -2,6 +2,7 @@ import Data_Type.Data_Type;
 import Data_Type.Variable_form;
 import Hplsql.HplsqlBaseListener;
 import Hplsql.HplsqlParser;
+import codgen.OrderBy;
 import codgen.Query;
 import org.json.simple.parser.ParseException;
 import sympol_table.Scope;
@@ -133,7 +134,7 @@ public class Listener extends HplsqlBaseListener {
         // order by
         if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().order_by_clause() != null) {
             if (ctx.fullselect_stmt().fullselect_stmt_item(0).subselect_stmt().order_by_clause().T_DESC() != null)
-                Query.T_DESC = true;
+                OrderBy.T_DESC = true;
 
         }
 

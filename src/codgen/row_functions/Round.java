@@ -30,7 +30,7 @@ public class Round implements RowFunction {
                 System.out.println("\tmult : "+number*Math.pow(10.0,degree));
                 System.out.println("\tround: "+Math.round(number*Math.pow(10.0,degree)));
                 System.out.println("\tdive : "+Math.round((number * Math.pow(10.0, degree)) / Math.pow(10.0, degree)));*/
-                result.add(String.valueOf(Math.round((number * Math.pow(10.0, degree)) / (float) Math.pow(10.0, degree))));
+                result.add(Double.toString(Math.round((number * Math.pow(10.0, degree)) / (float) Math.pow(10.0, degree))));
             }else {
                 String fraction=String.valueOf(fractionalPart(number));
                 int num = (int) (number/Math.pow(10.0,degree));
@@ -38,7 +38,7 @@ public class Round implements RowFunction {
                 if(((int)up)>=5)
                     num++;
                 num*=Math.pow(10.0,degree);
-                result.add(String.valueOf(num));
+                result.add(Double.toString(num));
             }
         });
 

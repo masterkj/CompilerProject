@@ -6,6 +6,9 @@ public class Quartile3 implements AggregationFunction{
     @Override
     public String reduce(ArrayList<String> values) {
 
+        if(values.size()==1)
+            return values.get(0);
+
         boolean odd=values.size()%2!=0;
 
         int mid=values.size()/2;

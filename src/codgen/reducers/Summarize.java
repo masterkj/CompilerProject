@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class Summarize {
 
     public static String reduce(String sourceFilePath,String reduceFileName) {
+        System.out.println(0000001);
 
         Query.reduce(sourceFilePath, AggregationFunction.choseReducer("avg"),"mean("+reduceFileName+")");
 

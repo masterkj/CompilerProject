@@ -9,6 +9,9 @@ public class Quartile1 implements AggregationFunction{
 
         Collections.sort(values);
 
+        if(values.size()==1)
+            return values.get(0);
+
         int mid=values.size()/2;
 
         if(mid%2!=0)
