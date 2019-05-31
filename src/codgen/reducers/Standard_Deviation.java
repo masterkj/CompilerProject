@@ -17,6 +17,6 @@ public class Standard_Deviation implements AggregationFunction{
         sum/=values.size()-1;
         sum=Math.sqrt(sum);
 
-        return String.valueOf(sum);
+        return Double.toString(sum);
     }
 }

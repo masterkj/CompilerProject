@@ -16,7 +16,7 @@ public class Median implements AggregationFunction {
         double median=Double.parseDouble(values.get((values.size()/2)-1))+Double.parseDouble(values.get(values.size()/2));
         median/=2;
 
-        return String.valueOf(median);
+        return Double.toString(median);
 
 
     }

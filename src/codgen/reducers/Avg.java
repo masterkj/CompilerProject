@@ -11,6 +11,6 @@ public class Avg implements AggregationFunction {
 
         for(Double value : integerValues)
             sum+=value;
-        return String.valueOf(sum/values.size());
+        return Double.toString(sum/values.size());
     }
 }

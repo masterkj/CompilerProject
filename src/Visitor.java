@@ -285,7 +285,7 @@ public class Visitor<T> extends HplsqlBaseVisitor {
                 }
         });
         try {
-            OrderBy.order();
+            OrderBy.initOrder();
         } catch (IOException e) {
             e.printStackTrace();
         }

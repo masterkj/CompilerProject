@@ -19,6 +19,6 @@ public class Quartile1 implements AggregationFunction{
         double quartile1=Double.parseDouble(values.get((mid/2)-1))+Double.parseDouble(values.get(mid/2));
         quartile1/=2;
 
-        return String.valueOf(quartile1);
+        return Double.toString(quartile1);
     }
 }

@@ -13,6 +13,6 @@ public class Sum implements AggregationFunction {
         for(Double value : integerValues)
             sum+=value;
 
-        return String.valueOf(sum);
+        return Double.toString(sum);
     }
 }

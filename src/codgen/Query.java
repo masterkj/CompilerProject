@@ -79,12 +79,8 @@ public class Query {
 
     public static void copyReducer(String reducer) throws IOException {
 
-        FileChannel source = new FileInputStream(TEMP_PATH + REDUCE_PATH + reducer).getChannel();
-        FileChannel dest = new FileOutputStream(TEMP_PATH + ORDER_BY_PATH + reducer + "1").getChannel();
-        dest.transferFrom(source, 0, source.size());
-
-        source.close();
-        dest.close();
+        String name=TEMP_PATH + REDUCE_PATH + reducer;
+        OrderBy.copyFile(name,name+"1");
     }
 
     public static void deleteReducer(String reducer) {
